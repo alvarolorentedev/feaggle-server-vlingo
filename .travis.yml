@@ -7,7 +7,7 @@ jdk:
   - openjdk11
 
 after_success:
-  - if [ ! -n "$TRAVIS_TAG" ]; then
+  - if [ ! -z "$TRAVIS_TAG" ]; then
       docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
       ./gradlew shadowJar generateVersionFile ;
       docker build --build-arg VERSION=$(cat version.txt) -t "kmruiz/feaggle-server:$(cat version.txt)" . ;

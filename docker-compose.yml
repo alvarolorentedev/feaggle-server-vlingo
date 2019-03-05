@@ -8,3 +8,18 @@ services:
       POSTGRES_DB: "feaggle"
       POSTGRES_USER: "feaggle"
       POSTGRES_PASSWORD: "happy-pwd"
+
+  feaggle:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VERSION: 0.1.0
+    ports:
+      - "9092:9092"
+    environment:
+      FEAGGLE_JDBC_URL: "jdbc:postgresql://postgres:5432/feaggle"
+      FEAGGLE_JDBC_USER: "feaggle"
+      FEAGGLE_JDBC_PASSWORD: "happy-pwd"
+    depends_on:
+      - postgres

@@ -28,8 +28,8 @@ class ApplicationServer(
     fun start() {
         initWorld()
         initJournal()
-        initJournalConsumers()
         initRegistry()
+        initJournalConsumers()
         initServer()
     }
 
@@ -74,7 +74,7 @@ class ApplicationServer(
 
     private fun initServer() {
         val resources = Resources.are(
-            ReleaseToggleController(10).asResource()
+            ReleaseToggleController(world, 10).asResource()
         )
 
         server = Server.startWith(world.stage(),

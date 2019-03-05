@@ -29,6 +29,7 @@ val testContainersVersion = "1.10.6"
 val junitVersion = "5.4.0"
 val flywayVersion = "5.2.4"
 val restAssuredVersion = "3.3.0"
+val logbackVersion = "1.2.3"
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
@@ -40,6 +41,7 @@ dependencies {
 
     implementation("org.flywaydb:flyway-core:$flywayVersion")
     implementation("io.feaggle:feaggle:$feaggleVersion")
+    implementation("ch.qos.logback:logback-classic:$logbackVersion")
 
     testImplementation("org.testcontainers:testcontainers:$testContainersVersion")
     testImplementation("org.testcontainers:postgresql:$testContainersVersion")

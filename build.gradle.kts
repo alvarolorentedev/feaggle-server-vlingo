@@ -5,14 +5,15 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath("com.github.jengelman.gradle.plugins:shadow:5.0.0")
+        classpath("com.github.jengelman.gradle.plugins:shadow:4.0.3")
     }
 }
 
 plugins {
     kotlin("jvm") version "1.3.21"
-    id("com.github.johnrengelman.shadow")
 }
+
+apply(plugin = "com.github.johnrengelman.shadow")
 
 group = "io.feaggle"
 version = "0.1.0"
@@ -50,4 +51,16 @@ dependencies {
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
+}
+
+tasks.withType<Jar> {
+    manifest {
+        attributes(mapOf(
+            "Main-Class" to "io.feaggle.server.MainKt"
+        ))
+    }
+}
+
+task("generateVersionFile") {
+    File("version.txt").writeText(project.version.toString())
 }

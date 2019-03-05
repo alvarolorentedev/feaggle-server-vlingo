@@ -2,7 +2,7 @@ package io.feaggle.server.specs.toggles
 
 import io.feaggle.server.specs.Specification
 import io.restassured.RestAssured.`when`
-import org.hamcrest.Matchers.*
+import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.Test
 import java.util.*
 

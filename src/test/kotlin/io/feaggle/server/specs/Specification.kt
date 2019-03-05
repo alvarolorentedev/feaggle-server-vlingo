@@ -1,7 +1,6 @@
 package io.feaggle.server.specs
 
 import io.feaggle.server.ApplicationServer
-import org.flywaydb.core.Flyway
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.testcontainers.containers.PostgreSQLContainer

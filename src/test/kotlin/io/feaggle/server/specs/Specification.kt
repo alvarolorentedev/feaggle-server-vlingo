@@ -7,7 +7,10 @@ import org.junit.jupiter.api.BeforeEach
 import org.testcontainers.containers.PostgreSQLContainer
 
 abstract class Specification {
-    private val applicationServer = ApplicationServer()
+    private val port = 9092
+    protected val baseUrl = "http://localhost:$port"
+
+    private lateinit var applicationServer: ApplicationServer
     private val postgreSql = PostgreSQLContainer<Nothing>()
 
     @BeforeEach
@@ -19,6 +22,7 @@ abstract class Specification {
                 .dataSource(postgreSql.jdbcUrl, postgreSql.username, postgreSql.password)
         ).migrate()
 
+        applicationServer = ApplicationServer(postgreSql.jdbcUrl, postgreSql.username, postgreSql.password, port)
         applicationServer.start()
     }
 

@@ -1,8 +1,11 @@
 package io.feaggle.server.domain.releases
 
-import io.feaggle.server.infrastructure.journal.registerConsumer
+import io.feaggle.server.infrastructure.journal.register
+import io.feaggle.server.infrastructure.journal.withConsumer
 import io.vlingo.lattice.model.DomainEvent
 import io.vlingo.lattice.model.sourcing.EventSourced
+import io.vlingo.lattice.model.sourcing.SourcedTypeRegistry
+import io.vlingo.symbio.store.journal.Journal
 import java.time.LocalDateTime
 
 class ReleaseActor(
@@ -40,7 +43,8 @@ class ReleaseActor(
     }
 }
 
-fun registerReleaseActorConsumers() {
-    registerConsumer(ReleaseActor::whenEnabled)
-    registerConsumer(ReleaseActor::whenDisabled)
+fun registerReleaseActorConsumers(registry: SourcedTypeRegistry, journal: Journal<String>) {
+    registry.register<ReleaseActor>(journal)
+        .withConsumer(ReleaseActor::whenEnabled)
+        .withConsumer(ReleaseActor::whenDisabled)
 }

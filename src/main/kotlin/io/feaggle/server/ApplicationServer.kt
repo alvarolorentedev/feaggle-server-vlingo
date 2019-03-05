@@ -65,7 +65,7 @@ class ApplicationServer(
     }
 
     private fun initJournalConsumers() {
-        registerReleaseActorConsumers()
+        registerReleaseActorConsumers(registry, journal)
     }
 
     private fun initRegistry() {

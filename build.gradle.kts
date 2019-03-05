@@ -1,7 +1,17 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath("com.github.jengelman.gradle.plugins:shadow:5.0.0")
+    }
+}
+
 plugins {
     kotlin("jvm") version "1.3.21"
+    id("com.github.johnrengelman.shadow")
 }
 
 group = "io.feaggle"

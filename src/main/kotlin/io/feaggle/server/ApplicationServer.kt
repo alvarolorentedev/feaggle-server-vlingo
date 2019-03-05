@@ -11,6 +11,7 @@ import io.vlingo.symbio.store.DataFormat
 import io.vlingo.symbio.store.common.jdbc.Configuration
 import io.vlingo.symbio.store.journal.Journal
 import io.vlingo.symbio.store.journal.jdbc.postgres.PostgresJournalActor
+import org.flywaydb.core.Flyway
 
 class ApplicationServer(
     private val dbUrl: String,
@@ -40,6 +41,11 @@ class ApplicationServer(
     }
 
     private fun initJournal() {
+        Flyway(
+            Flyway.configure()
+                .dataSource(dbUrl, dbUser, dbPassword)
+        ).migrate()
+
         val journalConfiguration = Configuration(
             NoopConfigurationInterest(), // You will need to create your own ConfigurationInterest
             "org.postgresql.Driver",

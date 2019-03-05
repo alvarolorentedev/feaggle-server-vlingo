@@ -17,11 +17,6 @@ abstract class Specification {
     internal fun setUp() {
         postgreSql.start()
 
-        Flyway(
-            Flyway.configure()
-                .dataSource(postgreSql.jdbcUrl, postgreSql.username, postgreSql.password)
-        ).migrate()
-
         applicationServer = ApplicationServer(postgreSql.jdbcUrl, postgreSql.username, postgreSql.password, port)
         applicationServer.start()
     }

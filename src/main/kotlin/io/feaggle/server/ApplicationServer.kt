@@ -1,5 +1,6 @@
 package io.feaggle.server
 
+import io.feaggle.server.domain.releases.registerReleaseActorConsumers
 import io.feaggle.server.infrastructure.journal.NoopConfigurationInterest
 import io.feaggle.server.infrastructure.journal.NoopJournalListener
 import io.feaggle.server.infrastructure.resources.ReleaseToggleController
@@ -27,6 +28,7 @@ class ApplicationServer(
     fun start() {
         initWorld()
         initJournal()
+        initJournalConsumers()
         initRegistry()
         initServer()
     }
@@ -60,6 +62,10 @@ class ApplicationServer(
         )
 
         journal = Journal.using(world.stage(), PostgresJournalActor::class.java, NoopJournalListener(), journalConfiguration)
+    }
+
+    private fun initJournalConsumers() {
+        registerReleaseActorConsumers()
     }
 
     private fun initRegistry() {

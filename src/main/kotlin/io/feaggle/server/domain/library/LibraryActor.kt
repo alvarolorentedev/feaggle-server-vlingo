@@ -12,13 +12,13 @@ import io.vlingo.symbio.store.journal.Journal
 import io.vlingo.symbio.store.journal.JournalReader
 import java.util.*
 
-class LibraryActor(journal: Journal<String>): EventSourced(), Library {
+class LibraryActor(journal: Journal<String>) : EventSourced(), Library, Scheduled<Any> {
     private val gson = Gson()
     private val releases = Library.Releases(emptyMap<UUID, Library.SingleRelease>().toMutableMap())
     private val reader: JournalReader<String> = journal.journalReader("library").await()
 
     init {
-        scheduler().schedule(this::pollJournal, null, 0, 5)
+        scheduler().schedule(selfAs(Scheduled::class.java) as Scheduled<Any>, null, 0, 5)
     }
 
     override fun streamName() = "library"
@@ -34,10 +34,8 @@ class LibraryActor(journal: Journal<String>): EventSourced(), Library {
     }
 
     // Polling
-    fun pollJournal(scheduled: Scheduled<Any>, isNull: Any?) {
+    override fun intervalSignal(scheduled: Scheduled<Any>?, data: Any?) {
         reader.readNext().andThenConsume { event ->
-            logger().log(gson.toJson(event))
-
             if (event.type.contains("ReleaseNamed")) {
                 val named = gson.fromJson(event.entryData, Release.ReleaseNamed::class.java)
                 apply(Library.ReleaseInfoChanged(named.id, named.name, false, named.happened))
@@ -50,7 +48,14 @@ class LibraryActor(journal: Journal<String>): EventSourced(), Library {
 
             if (event.type.contains("ReleaseDisabled")) {
                 val disabled = gson.fromJson(event.entryData, Release.ReleaseDisabled::class.java)
-                apply(Library.ReleaseInfoChanged(disabled.id, releases.state[disabled.id]!!.name, false, disabled.happened))
+                apply(
+                    Library.ReleaseInfoChanged(
+                        disabled.id,
+                        releases.state[disabled.id]!!.name,
+                        false,
+                        disabled.happened
+                    )
+                )
             }
         }
     }

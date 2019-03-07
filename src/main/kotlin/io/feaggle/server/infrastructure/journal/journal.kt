@@ -7,8 +7,8 @@ import io.vlingo.lattice.model.sourcing.Sourced
 import io.vlingo.lattice.model.sourcing.SourcedTypeRegistry
 import io.vlingo.symbio.Entry
 import io.vlingo.symbio.EntryAdapter
-import io.vlingo.symbio.Source
 import io.vlingo.symbio.Metadata
+import io.vlingo.symbio.Source
 import io.vlingo.symbio.store.journal.Journal
 
 inline fun <reified T : Source<*>> eventAdapter(): EntryAdapter<T, Entry.TextEntry> {

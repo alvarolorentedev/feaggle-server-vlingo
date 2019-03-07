@@ -3,7 +3,6 @@ package io.feaggle.server.domain.releases
 import io.feaggle.server.infrastructure.journal.register
 import io.feaggle.server.infrastructure.journal.withConsumer
 import io.vlingo.common.Completes
-import io.vlingo.lattice.model.DomainEvent
 import io.vlingo.lattice.model.sourcing.EventSourced
 import io.vlingo.lattice.model.sourcing.SourcedTypeRegistry
 import io.vlingo.symbio.store.journal.Journal
@@ -17,27 +16,23 @@ class ReleaseActor(
     private var enabled: Boolean,
     private var lastChange: LocalDateTime
 ) : EventSourced(), Release {
-    data class ReleaseNamed(val id: UUID, val name: String, val happened: LocalDateTime) : DomainEvent(1)
-    data class ReleaseEnabled(val id: UUID, val happened: LocalDateTime) : DomainEvent(1)
-    data class ReleaseDisabled(val id: UUID, val happened: LocalDateTime) : DomainEvent(1)
-
     constructor(id: UUID) : this(id, "", false, LocalDateTime.now())
 
     override fun streamName() = "release_$id"
 
     override fun name(name: String) {
-        apply(ReleaseNamed(id, name, LocalDateTime.now()))
+        apply(Release.ReleaseNamed(id, name, LocalDateTime.now()))
     }
 
     override fun enable() {
         if (!enabled) {
-            apply(ReleaseEnabled(id, LocalDateTime.now()))
+            apply(Release.ReleaseEnabled(id, LocalDateTime.now()))
         }
     }
 
     override fun disable() {
         if (enabled) {
-            apply(ReleaseDisabled(id, LocalDateTime.now()))
+            apply(Release.ReleaseDisabled(id, LocalDateTime.now()))
         }
     }
 
@@ -59,17 +54,17 @@ class ReleaseActor(
     }
 
     // Events
-    fun whenNamed(releaseNamed: ReleaseNamed) {
+    fun whenNamed(releaseNamed: Release.ReleaseNamed) {
         name = releaseNamed.name
         lastChange = releaseNamed.happened
     }
 
-    fun whenEnabled(releaseEnabled: ReleaseEnabled) {
+    fun whenEnabled(releaseEnabled: Release.ReleaseEnabled) {
         enabled = true
         lastChange = releaseEnabled.happened
     }
 
-    fun whenDisabled(releaseDisabled: ReleaseDisabled) {
+    fun whenDisabled(releaseDisabled: Release.ReleaseDisabled) {
         enabled = false
         lastChange = releaseDisabled.happened
     }

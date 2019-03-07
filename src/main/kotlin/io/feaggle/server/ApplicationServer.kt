@@ -1,5 +1,6 @@
 package io.feaggle.server
 
+import io.feaggle.server.domain.library.registerLibraryConsumers
 import io.feaggle.server.domain.releases.registerReleaseActorConsumers
 import io.feaggle.server.infrastructure.journal.NoopConfigurationInterest
 import io.feaggle.server.infrastructure.journal.NoopJournalListener
@@ -66,6 +67,7 @@ class ApplicationServer(
 
     private fun initJournalConsumers() {
         registerReleaseActorConsumers(registry, journal)
+        registerLibraryConsumers(registry, journal)
     }
 
     private fun initRegistry() {
@@ -74,7 +76,7 @@ class ApplicationServer(
 
     private fun initServer() {
         val resources = Resources.are(
-            ReleaseToggleController(world, 10).asResource()
+            ReleaseToggleController(world, journal, 10).asResource()
         )
 
         server = Server.startWith(world.stage(),

@@ -11,24 +11,15 @@ abstract class Specification {
         private val postgreSql = PostgreSQLContainer<Nothing>()
         private val port = 9092
         private val baseUrl = "http://localhost:$port"
+        private val applicationServer: ApplicationServer
 
         init {
             postgreSql.start()
             RestAssured.baseURI = baseUrl
             RestAssured.config.httpClientConfig.dontReuseHttpClientInstance()
+
+            applicationServer = ApplicationServer(postgreSql.jdbcUrl, postgreSql.username, postgreSql.password, port)
+            applicationServer.start()
         }
-    }
-
-    private lateinit var applicationServer: ApplicationServer
-
-    @BeforeEach
-    internal fun setUp() {
-        applicationServer = ApplicationServer(postgreSql.jdbcUrl, postgreSql.username, postgreSql.password, port)
-        applicationServer.start()
-    }
-
-    @AfterEach
-    internal fun tearDown() {
-        applicationServer.stop()
     }
 }

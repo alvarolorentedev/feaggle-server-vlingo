@@ -23,7 +23,7 @@ class LibraryActor(journal: Journal<String>) : EventSourced(), Library, Schedule
 
     override fun streamName() = "library"
 
-    // Command
+    // Queries
     override fun state(): Completes<Library.Releases> {
         return completes<Library.Releases>().with(releases)
     }

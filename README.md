@@ -16,7 +16,7 @@ feature toggles for the `feaggle` library.
 Start a postgresql instance in your local machine, the easiest way is using the provided
 docker-compose.yml that is in the root of the project:
 
-`docker-compose up postgre`
+`docker-compose up postgres`
 
 It will take several minutes if there is no cached image of postgresql, after that, just
 run the [main function](src/main/kotlin/io/feaggle/server/Main.kt) with your favourite IDE.

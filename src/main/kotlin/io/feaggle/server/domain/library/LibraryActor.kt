@@ -19,7 +19,7 @@ class LibraryActor(journal: Journal<String>) : EventSourced(), Library, Schedule
     private val reader: JournalReader<String> = journal.journalReader("library").await()
 
     init {
-        scheduler().schedule(selfAs(Scheduled::class.java) as Scheduled<Any>, null, 0, 5)
+        scheduler().schedule(selfAs(Scheduled::class.java) as Scheduled<Any>, null, 0, 1)
     }
 
     override fun streamName() = "library"

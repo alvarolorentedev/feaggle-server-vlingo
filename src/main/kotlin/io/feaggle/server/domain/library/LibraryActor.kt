@@ -13,13 +13,16 @@ import io.vlingo.symbio.store.journal.JournalReader
 import java.time.ZoneOffset.UTC
 import java.util.*
 
+private const val maximumEntries: Int = 100
+private const val pollingInterval: Long = 100
+
 class LibraryActor(journal: Journal<String>) : EventSourced(), Library, Scheduled<Any> {
     private val gson = Gson()
     private val releases = Library.Releases(emptyMap<UUID, Library.SingleRelease>().toMutableMap())
     private val reader: JournalReader<String> = journal.journalReader("library").await()
 
     init {
-        scheduler().schedule(selfAs(Scheduled::class.java) as Scheduled<Any>, null, 0, 1)
+        scheduler().schedule(selfAs(Scheduled::class.java) as Scheduled<Any>, null, 0, pollingInterval)
     }
 
     override fun streamName() = "library"
@@ -36,27 +39,37 @@ class LibraryActor(journal: Journal<String>) : EventSourced(), Library, Schedule
 
     // Polling
     override fun intervalSignal(scheduled: Scheduled<Any>?, data: Any?) {
-        reader.readNext().andThenConsume { event ->
-            if (event.type.contains("ReleaseNamed")) {
-                val named = gson.fromJson(event.entryData, Release.ReleaseNamed::class.java)
-                apply(Library.ReleaseInfoChanged(named.id, named.name, false, named.happened))
-            }
+        reader.readNext(maximumEntries).andThenConsume { stream ->
+            stream.forEach { event ->
 
-            if (event.type.contains("ReleaseEnabled")) {
-                val enabled = gson.fromJson(event.entryData, Release.ReleaseEnabled::class.java)
-                apply(Library.ReleaseInfoChanged(enabled.id, releases.state[enabled.id]!!.name, true, enabled.happened))
-            }
+                if (event.type.endsWith("ReleaseNamed")) {
+                    val named = gson.fromJson(event.entryData, Release.ReleaseNamed::class.java)
+                    apply(Library.ReleaseInfoChanged(named.id, named.name, false, named.happened))
+                }
 
-            if (event.type.contains("ReleaseDisabled")) {
-                val disabled = gson.fromJson(event.entryData, Release.ReleaseDisabled::class.java)
-                apply(
-                    Library.ReleaseInfoChanged(
-                        disabled.id,
-                        releases.state[disabled.id]!!.name,
-                        false,
-                        disabled.happened
+                if (event.type.endsWith("ReleaseEnabled")) {
+                    val enabled = gson.fromJson(event.entryData, Release.ReleaseEnabled::class.java)
+                    apply(
+                        Library.ReleaseInfoChanged(
+                            enabled.id,
+                            releases.state[enabled.id]!!.name,
+                            true,
+                            enabled.happened
+                        )
                     )
-                )
+                }
+
+                if (event.type.endsWith("ReleaseDisabled")) {
+                    val disabled = gson.fromJson(event.entryData, Release.ReleaseDisabled::class.java)
+                    apply(
+                        Library.ReleaseInfoChanged(
+                            disabled.id,
+                            releases.state[disabled.id]!!.name,
+                            false,
+                            disabled.happened
+                        )
+                    )
+                }
             }
         }
     }

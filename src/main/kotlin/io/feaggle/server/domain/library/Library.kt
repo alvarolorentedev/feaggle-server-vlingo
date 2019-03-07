@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 import java.util.*
 
 interface Library {
-    data class SingleRelease(val name: String, val enabled: Boolean, val toEpochSecond: Long)
+    data class SingleRelease(val name: String, val enabled: Boolean, val lastChange: Long)
     data class Releases(val state: MutableMap<UUID, SingleRelease>)
     data class ReleaseInfoChanged(
         val release: UUID,

@@ -19,8 +19,9 @@ group = "io.feaggle"
 version = "0.1.0"
 
 repositories {
-    jcenter()
+    mavenLocal()
     mavenCentral()
+    jcenter()
 }
 
 val feaggleVersion = "0.1.0"

@@ -13,7 +13,8 @@ import java.util.*
 class ReleaseToggleController(private val world: World, private val poolSize: Int) {
     data class CreateReleaseCommand(val name: String)
 
-    fun asResource() = resource("releases", poolSize,
+    fun asResource() = resource(
+        "releases", poolSize,
         get("/release/{id}")
             .param(String::class.java)
             .handle(this::getRelease).onError(this::onError),
@@ -25,13 +26,18 @@ class ReleaseToggleController(private val world: World, private val poolSize: In
     private fun getRelease(id: String) =
         world.releaseOf(UUID.fromString(id))
             .andThenTo { it.state() }
-            .andThen { state -> Response.of(Response.Status.Ok, serialized(state)) }
-            .otherwise { Response.of(Response.Status.NotFound) }
+            .andThen {
+                it.map {
+                    Response.of(Response.Status.Ok, serialized(it))
+                }.orElseGet {
+                    Response.of(Response.Status.NotFound)
+                }
+            }
 
     private fun createRelease(command: CreateReleaseCommand): Completes<Response> {
         return world.releaseFor(command.name)
             .state()
-            .andThen { state -> Response.of(Response.Status.Ok, serialized(state)) }
+            .andThen { state -> Response.of(Response.Status.Created, serialized(state.get())) }
     }
 
     private fun onError(t: Throwable): Completes<Response> {

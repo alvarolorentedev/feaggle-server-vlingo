@@ -8,6 +8,7 @@ import io.vlingo.lattice.model.sourcing.EventSourced
 import io.vlingo.lattice.model.sourcing.SourcedTypeRegistry
 import io.vlingo.symbio.store.journal.Journal
 import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.util.*
 
 class ReleaseActor(
@@ -15,16 +16,17 @@ class ReleaseActor(
     private var name: String,
     private var enabled: Boolean,
     private var lastChange: LocalDateTime
-): EventSourced(), Release {
-    data class ReleaseCreated(val id: UUID, val name: String, val enabled: Boolean, val happened: LocalDateTime): DomainEvent(1)
-    data class ReleaseEnabled(val id: UUID, val happened: LocalDateTime): DomainEvent(1)
-    data class ReleaseDisabled(val id: UUID, val happened: LocalDateTime): DomainEvent(1)
+) : EventSourced(), Release {
+    data class ReleaseNamed(val id: UUID, val name: String, val happened: LocalDateTime) : DomainEvent(1)
+    data class ReleaseEnabled(val id: UUID, val happened: LocalDateTime) : DomainEvent(1)
+    data class ReleaseDisabled(val id: UUID, val happened: LocalDateTime) : DomainEvent(1)
 
-    override fun streamName() = "release_$name"
+    constructor(id: UUID) : this(id, "", false, LocalDateTime.now())
 
-    // Commands
-    init {
-        apply(ReleaseCreated(id, name, enabled, LocalDateTime.now()))
+    override fun streamName() = "release_$id"
+
+    override fun name(name: String) {
+        apply(ReleaseNamed(id, name, LocalDateTime.now()))
     }
 
     override fun enable() {
@@ -39,16 +41,27 @@ class ReleaseActor(
         }
     }
 
-    override fun state(): Completes<Release.State> {
+    override fun state(): Completes<Optional<Release.State>> {
+        if (name == "") {
+            return completes<Optional<Release.State>>().with(Optional.empty())
+        }
+
         return completes<Release.State>()
-            .with(Release.State(id.toString(), name, if (enabled) "enabled" else "disabled", lastChange))
+            .with(
+                Optional.of(
+                    Release.State(
+                        id.toString(), name, if (enabled) "enabled" else "disabled", lastChange.toEpochSecond(
+                            ZoneOffset.UTC
+                        )
+                    )
+                )
+            )
     }
 
     // Events
-    fun whenCreated(releaseCreated: ReleaseCreated) {
-        name = releaseCreated.name
-        enabled = releaseCreated.enabled
-        lastChange = releaseCreated.happened
+    fun whenNamed(releaseNamed: ReleaseNamed) {
+        name = releaseNamed.name
+        lastChange = releaseNamed.happened
     }
 
     fun whenEnabled(releaseEnabled: ReleaseEnabled) {
@@ -64,7 +77,7 @@ class ReleaseActor(
 
 fun registerReleaseActorConsumers(registry: SourcedTypeRegistry, journal: Journal<String>) {
     registry.register<ReleaseActor>(journal)
-        .withConsumer(ReleaseActor::whenCreated)
+        .withConsumer(ReleaseActor::whenNamed)
         .withConsumer(ReleaseActor::whenEnabled)
         .withConsumer(ReleaseActor::whenDisabled)
 }

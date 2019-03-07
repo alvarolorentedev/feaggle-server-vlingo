@@ -33,7 +33,6 @@ fun World.releaseFor(name: String): Release {
 fun World.releaseOf(id: UUID): Completes<Release> =
     stage().actorOf(Release::class.java, addressOf(id))
         .andThen { it ?: instantiateById(id) }
-        .otherwise { instantiateById(id) }
 
 private fun World.instantiateById(
     id: UUID

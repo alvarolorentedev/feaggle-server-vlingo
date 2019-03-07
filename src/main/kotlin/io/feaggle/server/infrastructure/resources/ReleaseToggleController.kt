@@ -3,6 +3,7 @@ package io.feaggle.server.infrastructure.resources
 import io.feaggle.server.domain.library.library
 import io.feaggle.server.domain.releases.releaseFor
 import io.feaggle.server.domain.releases.releaseOf
+import io.feaggle.server.infrastructure.http.answerJson
 import io.vlingo.actors.World
 import io.vlingo.common.Completes
 import io.vlingo.common.serialization.JsonSerialization.serialized
@@ -36,9 +37,9 @@ class ReleaseToggleController(private val world: World, private val journal: Jou
             .andThenTo { it.state() }
             .andThen {
                 it.map {
-                    Response.of(Response.Status.Ok, serialized(it))
+                    answerJson(Response.Status.Ok, it)
                 }.orElseGet {
-                    Response.of(Response.Status.NotFound)
+                    answerJson(Response.Status.NotFound)
                 }
             }
 
@@ -52,24 +53,24 @@ class ReleaseToggleController(private val world: World, private val journal: Jou
             }.andThenTo {
                 it.state()
             }
-            .andThen { state -> Response.of(Response.Status.Created, serialized(state.get())) }
+            .andThen { state -> answerJson(Response.Status.Ok, state.get()) }
     }
 
     private fun allReleases() =
         world.library(journal)
             .andThenTo { it.state() }
             .andThen {
-                Response.of(Response.Status.Ok, serialized(it))
+                answerJson(Response.Status.Ok, it)
             }
 
     private fun createRelease(command: CreateReleaseCommand): Completes<Response> {
         return world.releaseFor(command.name)
             .state()
-            .andThen { state -> Response.of(Response.Status.Created, serialized(state.get())) }
+            .andThen { state -> answerJson(Response.Status.Created, state.get()) }
     }
 
     private fun onError(t: Throwable): Completes<Response> {
         world.logger("release").log("Unhandled error", t)
-        return Completes.withSuccess(Response.of(Response.Status.InternalServerError))
+        return Completes.withSuccess(answerJson(Response.Status.InternalServerError))
     }
 }

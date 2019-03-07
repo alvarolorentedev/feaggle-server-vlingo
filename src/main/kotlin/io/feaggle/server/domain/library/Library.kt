@@ -26,7 +26,6 @@ private const val addressId = "0"
 fun World.library(journal: Journal<String>): Completes<Library> {
     return stage().actorOf(Library::class.java, addressFactory().from(addressId))
         .andThen { it ?: instantiate(journal) }
-        .otherwise { instantiate(journal) }
 }
 
 private fun World.instantiate(journal: Journal<String>): Library {

@@ -10,6 +10,7 @@ import io.vlingo.lattice.model.sourcing.EventSourced
 import io.vlingo.lattice.model.sourcing.SourcedTypeRegistry
 import io.vlingo.symbio.store.journal.Journal
 import io.vlingo.symbio.store.journal.JournalReader
+import java.time.ZoneOffset.UTC
 import java.util.*
 
 class LibraryActor(journal: Journal<String>) : EventSourced(), Library, Scheduled<Any> {
@@ -30,7 +31,7 @@ class LibraryActor(journal: Journal<String>) : EventSourced(), Library, Schedule
 
     // Events
     fun whenReleaseInfoChanged(info: Library.ReleaseInfoChanged) {
-        releases.state[info.release] = Library.SingleRelease(info.name, info.status)
+        releases.state[info.release] = Library.SingleRelease(info.name, info.status, info.happened.toEpochSecond(UTC))
     }
 
     // Polling

@@ -9,9 +9,10 @@ import java.time.LocalDateTime
 
 class ReleaseActor(
     val id: Release.ReleaseId,
-    var information: Release.ReleaseInformation
+    var information: Release.ReleaseInformation,
+    var status: Release.ReleaseStatus
 ): EventSourced(), Release {
-    constructor(id: Release.ReleaseId): this(id, Release.ReleaseInformation(""))
+    constructor(id: Release.ReleaseId): this(id, Release.ReleaseInformation(""), Release.ReleaseStatus(false))
 
     override fun streamName() = "/declaration/${id.declaration}/boundary/${id.boundary}/project/${id.project}/${id.name}"
 
@@ -20,15 +21,24 @@ class ReleaseActor(
         if (information.description != releaseDeclaration.description) {
             apply(Release.ReleaseDescriptionChanged(id, releaseDeclaration.description, LocalDateTime.now()))
         }
+
+        if (status.enabled != releaseDeclaration.enabled) {
+            apply(Release.ReleaseStatusChanged(id, releaseDeclaration.enabled, LocalDateTime.now()))
+        }
     }
 
     // Events
     fun whenDescriptionChanged(event: Release.ReleaseDescriptionChanged) {
         information = information.copy(description = event.newDescription)
     }
+
+    fun whenStatusChanged(event: Release.ReleaseStatusChanged) {
+        status = status.copy(enabled = event.newStatus)
+    }
 }
 
 fun bootstrapReleaseActorConsumers(registry: SourcedTypeRegistry, journal: Journal<String>) {
     registry.register<ReleaseActor>(journal)
         .withConsumer(ReleaseActor::whenDescriptionChanged)
+        .withConsumer(ReleaseActor::whenStatusChanged)
 }

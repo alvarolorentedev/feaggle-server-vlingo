@@ -19,11 +19,23 @@ class ReleaseTest: UnitTest() {
     internal fun shouldDetectChangesInDescription() {
         waitForEvents(1)
 
-        release.build(Release.ReleaseDeclaration("declaration", "boundary", "project", "my-release", "new-description"))
+        release.build(Release.ReleaseDeclaration("declaration", "boundary", "project", "my-release", "new-description", false))
 
         assertEquals(
             "new-description",
             appliedEventAs<Release.ReleaseDescriptionChanged>(0).newDescription
+        )
+    }
+
+    @Test
+    internal fun shouldDetectChangesInTheStatus() {
+        waitForEvents(1)
+
+        release.build(Release.ReleaseDeclaration("declaration", "boundary", "project", "my-release", "", true))
+
+        assertEquals(
+            true,
+            appliedEventAs<Release.ReleaseStatusChanged>(0).newStatus
         )
     }
 }

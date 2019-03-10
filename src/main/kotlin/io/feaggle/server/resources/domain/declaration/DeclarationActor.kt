@@ -8,6 +8,8 @@ import io.feaggle.server.resources.domain.boundary.Boundary
 import io.feaggle.server.resources.domain.boundary.BoundaryActor
 import io.feaggle.server.resources.domain.project.Project
 import io.feaggle.server.resources.domain.project.ProjectActor
+import io.feaggle.server.resources.domain.release.Release
+import io.feaggle.server.resources.domain.release.ReleaseActor
 import io.vlingo.lattice.model.DomainEvent
 import io.vlingo.lattice.model.sourcing.EventSourced
 import io.vlingo.lattice.model.sourcing.SourcedTypeRegistry
@@ -63,6 +65,18 @@ class DeclarationActor(
 
                     val project = stage().actorFor(Project::class.java, ProjectActor::class.java, projectId)
                     project.build(projectDeclaration)
+                }
+
+                "release" -> {
+                    val boundaryId = value["in-boundary"].asText()
+                    val projectId = value["in-project"].asText()
+                    val description = value["description"].asText()
+                    val enabled = value["enabled"].asBoolean()
+                    val releaseId = Release.ReleaseId(id.name, boundaryId, projectId, name)
+
+                    val releaseDeclaration = Release.ReleaseDeclaration(id.name, boundaryId, projectId, name, description, enabled)
+                    val release = stage().actorFor(Release::class.java, ReleaseActor::class.java, releaseId)
+                    release.build(releaseDeclaration)
                 }
 
             }

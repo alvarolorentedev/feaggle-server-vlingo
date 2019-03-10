@@ -29,11 +29,15 @@ class LibraryActor(journal: Journal<String>) : EventSourced(), Library, Schedule
 
     // Queries
     override fun state(): Completes<Library.Releases> {
+        logger().log("Library received query state()")
+
         return completes<Library.Releases>().with(releases)
     }
 
     // Events
     fun whenReleaseInfoChanged(info: Library.ReleaseInfoChanged) {
+        logger().log("Library received event $info")
+
         releases.state[info.release] = Library.SingleRelease(info.name, info.status, info.happened.toEpochSecond(UTC))
     }
 
@@ -41,6 +45,7 @@ class LibraryActor(journal: Journal<String>) : EventSourced(), Library, Schedule
     override fun intervalSignal(scheduled: Scheduled<Any>?, data: Any?) {
         reader.readNext(maximumEntries).andThenConsume { stream ->
             stream.forEach { event ->
+                logger().log("Library polled event ${event.type}\n\twith data ${event.entryData}")
 
                 if (event.type.endsWith("ReleaseNamed")) {
                     val named = gson.fromJson(event.entryData, Release.ReleaseNamed::class.java)

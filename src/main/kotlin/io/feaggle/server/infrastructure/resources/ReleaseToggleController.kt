@@ -13,6 +13,8 @@ import io.vlingo.symbio.store.journal.Journal
 import java.util.*
 
 class ReleaseToggleController(private val world: World, private val journal: Journal<String>, private val poolSize: Int) {
+    private val logger = world.defaultLogger()
+
     data class CreateReleaseCommand(val name: String)
     data class ChangeReleaseStatusCommand(val enabled: Boolean)
 
@@ -32,8 +34,10 @@ class ReleaseToggleController(private val world: World, private val journal: Jou
             .handle(this::createRelease).onError(this::onError)
     )
 
-    private fun getRelease(id: String) =
-        world.releaseOf(UUID.fromString(id))
+    private fun getRelease(id: String): Completes<Response> {
+        logger.log("Received HTTP request GET /release/$id")
+
+        return world.releaseOf(UUID.fromString(id))
             .andThenTo { it.state() }
             .andThen {
                 it.map {
@@ -42,8 +46,11 @@ class ReleaseToggleController(private val world: World, private val journal: Jou
                     answerJson(Response.Status.NotFound)
                 }
             }
+    }
 
     private fun changeReleaseStatus(id: String, command: ChangeReleaseStatusCommand): Completes<Response> {
+        logger.log("Received HTTP request PUT /release/$id\n\twith body ${serialized(command)}")
+
         return world.releaseOf(UUID.fromString(id))
             .andThenConsume { release ->
                 when (command.enabled) {
@@ -56,21 +63,26 @@ class ReleaseToggleController(private val world: World, private val journal: Jou
             .andThen { state -> answerJson(Response.Status.Ok, state.get()) }
     }
 
-    private fun allReleases() =
-        world.library(journal)
+    private fun allReleases(): Completes<Response> {
+        logger.log("Received HTTP request GET /releases")
+
+        return world.library(journal)
             .andThenTo { it.state() }
             .andThen {
                 answerJson(Response.Status.Ok, it)
             }
+    }
 
     private fun createRelease(command: CreateReleaseCommand): Completes<Response> {
+        logger.log("Received HTTP request POST /release\n\twith body ${serialized(command)}")
+
         return world.releaseFor(command.name)
             .state()
             .andThen { state -> answerJson(Response.Status.Created, state.get()) }
     }
 
     private fun onError(t: Throwable): Completes<Response> {
-        world.logger("release").log("Unhandled error", t)
+        logger.log("Unhandled error", t)
         return Completes.withSuccess(answerJson(Response.Status.InternalServerError))
     }
 }

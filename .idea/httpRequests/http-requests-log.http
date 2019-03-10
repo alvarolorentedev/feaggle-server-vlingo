@@ -1,0 +1,197 @@
+GET http://localhost:9092/releases
+
+<> 2019-03-10T053933.200.json
+
+###
+
+PUT http://localhost:9092/release/6ec3d839-15f5-4a87-b708-c3c7b8e3d708
+Content-Type: application/json
+
+{
+  "enabled": true
+}
+
+<> 2019-03-10T053926.200.json
+
+###
+
+PUT http://localhost:9092/release/6ec3d839-15f5-4a87-b708-c3c7b8e3d708
+Content-Type: application/json
+
+{
+  "enabled": true
+}
+
+<> 2019-03-10T053908.200.json
+
+###
+
+GET http://localhost:9092/releases
+
+<> 2019-03-10T053845.200.json
+
+###
+
+GET http://localhost:9092/release/6ec3d839-15f5-4a87-b708-c3c7b8e3d708
+
+<> 2019-03-10T053838.200.json
+
+###
+
+POST http://localhost:9092/release
+Content-Type: application/json
+
+{
+  "name": "my-favourite-toggle"
+}
+
+<> 2019-03-10T053807.201.json
+
+###
+
+POST http://localhost:9092/release
+Content-Type: application/json
+
+{
+  "name": "my-favourite-toggle"
+}
+
+<> 2019-03-10T053653.201.json
+
+###
+
+GET http://localhost:9092/releases
+
+<> 2019-03-10T123831.200.json
+
+###
+
+GET http://localhost:9092/releases
+
+<> 2019-03-10T123617.200.json
+
+###
+
+PUT http://localhost:9092/release/0fd23be5-d15d-48ac-bd35-c80f2cf74d27
+Content-Type: application/json
+
+{
+  "enabled": true
+}
+
+<> 2019-03-10T123615.200.json
+
+###
+
+GET http://localhost:9092/releases
+
+<> 2019-03-10T123609.200.json
+
+###
+
+PUT http://localhost:9092/release/0fd23be5-d15d-48ac-bd35-c80f2cf74d27
+Content-Type: application/json
+
+{
+  "enabled": false
+}
+
+<> 2019-03-10T123606.200.json
+
+###
+
+GET http://localhost:9092/releases
+
+<> 2019-03-10T123552.200.json
+
+###
+
+GET http://localhost:9092/releases
+
+<> 2019-03-10T123529.200.json
+
+###
+
+PUT http://localhost:9092/release/0fd23be5-d15d-48ac-bd35-c80f2cf74d27
+Content-Type: application/json
+
+{
+  "enabled": true
+}
+
+<> 2019-03-10T123525.200.json
+
+###
+
+GET http://localhost:9092/releases
+
+<> 2019-03-10T123520.200.json
+
+###
+
+GET http://localhost:9092/release/0fd23be5-d15d-48ac-bd35-c80f2cf74d27
+
+<> 2019-03-10T123354.200.json
+
+###
+
+GET http://localhost:9092/release/0fd23be5-d15d-48ac-bd35-c80f2cf74d27
+
+<> 2019-03-10T123353.200.json
+
+###
+
+GET http://localhost:9092/release/0fd23be5-d15d-48ac-bd35-c80f2cf74d27
+
+<> 2019-03-10T123352.200.json
+
+###
+
+GET http://localhost:9092/release/0fd23be5-d15d-48ac-bd35-c80f2cf74d27
+
+<> 2019-03-10T123351.200.json
+
+###
+
+GET http://localhost:9092/release/0fd23be5-d15d-48ac-bd35-c80f2cf74d27
+
+<> 2019-03-10T123350.200.json
+
+###
+
+GET http://localhost:9092/release/0fd23be5-d15d-48ac-bd35-c80f2cf74d27
+
+<> 2019-03-10T123336.200.json
+
+###
+
+POST http://localhost:9092/release
+Content-Type: application/json
+
+{
+  "name": "my-favourite-toggle"
+}
+
+<> 2019-03-10T123322.201.json
+
+###
+
+GET http://localhost:9092/release/{{releaseId}}
+
+###
+
+GET http://localhost:9092/release/{{releaseID}}
+
+###
+
+POST http://localhost:9092/release
+Content-Type: application/json
+
+{
+  "name": "my-favourite-toggle"
+}
+
+<> 2019-03-10T123252.201.json
+
+###
+

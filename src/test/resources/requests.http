@@ -1,0 +1,28 @@
+POST http://localhost:9092/release
+Content-Type: application/json
+
+{
+  "name": "my-favourite-toggle"
+}
+> {%
+client.global.set("releaseId", response.body.id)
+%}
+
+###
+GET http://localhost:9092/release/{{releaseId}}
+
+###
+GET http://localhost:9092/releases
+
+###
+PUT http://localhost:9092/release/{{releaseId}}
+Content-Type: application/json
+
+{
+  "enabled": true
+}
+
+###
+GET http://localhost:9092/releases
+
+###

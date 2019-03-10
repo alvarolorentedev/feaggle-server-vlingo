@@ -21,16 +21,19 @@ class ReleaseActor(
     override fun streamName() = "release_$id"
 
     override fun name(name: String) {
+        logger().log("Release with ID $id received command name($name)")
         apply(Release.ReleaseNamed(id, name, LocalDateTime.now()))
     }
 
     override fun enable() {
+        logger().log("Release with ID $id received command enable()")
         if (!enabled) {
             apply(Release.ReleaseEnabled(id, LocalDateTime.now()))
         }
     }
 
     override fun disable() {
+        logger().log("Release with ID $id received command disable()")
         if (enabled) {
             apply(Release.ReleaseDisabled(id, LocalDateTime.now()))
         }
@@ -55,16 +58,22 @@ class ReleaseActor(
 
     // Events
     fun whenNamed(releaseNamed: Release.ReleaseNamed) {
+        logger().log("Release with ID $id received event $releaseNamed")
+
         name = releaseNamed.name
         lastChange = releaseNamed.happened
     }
 
     fun whenEnabled(releaseEnabled: Release.ReleaseEnabled) {
+        logger().log("Release with ID $id received event $releaseEnabled")
+
         enabled = true
         lastChange = releaseEnabled.happened
     }
 
     fun whenDisabled(releaseDisabled: Release.ReleaseDisabled) {
+        logger().log("Release with ID $id received event $releaseDisabled")
+
         enabled = false
         lastChange = releaseDisabled.happened
     }

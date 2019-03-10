@@ -1,0 +1,24 @@
+{
+  "state": {
+    "0fd23be5-d15d-48ac-bd35-c80f2cf74d27": {
+      "name": "my-favourite-toggle",
+      "enabled": true,
+      "lastChange": 1552221375
+    },
+    "fe59624d-54f7-42b9-acc9-2cb681f744cc": {
+      "name": "my-favourite-toggle",
+      "enabled": false,
+      "lastChange": 1552221172
+    },
+    "883b1669-48a4-42da-9c2a-21afaf96b93d": {
+      "name": "my-favourite-toggle",
+      "enabled": false,
+      "lastChange": 1552239413
+    },
+    "6ec3d839-15f5-4a87-b708-c3c7b8e3d708": {
+      "name": "my-favourite-toggle",
+      "enabled": true,
+      "lastChange": 1552239548
+    }
+  }
+}

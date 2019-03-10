@@ -25,7 +25,7 @@ abstract class UnitTest: JournalListener<String> {
     private val logger = FluentLogger.forEnclosingClass()
 
     private lateinit var mutexName: String
-    private lateinit var world: TestWorld
+    private lateinit var testWorld: TestWorld
     private lateinit var journal: Journal<String>
     private lateinit var registry: SourcedTypeRegistry
     private lateinit var appliedEvents: List<Entry<String>>
@@ -33,9 +33,9 @@ abstract class UnitTest: JournalListener<String> {
 
     @BeforeEach
     internal fun setUpWorld() {
-        world = TestWorld.startWithDefaults(javaClass.simpleName)
-        journal = Journal.using(world.stage(), InMemoryJournalActor::class.java, this)
-        registry = SourcedTypeRegistry(world.world())
+        testWorld = TestWorld.startWithDefaults(javaClass.simpleName)
+        journal = Journal.using(testWorld.stage(), InMemoryJournalActor::class.java, this)
+        registry = SourcedTypeRegistry(testWorld.world())
         appliedEvents = emptyList()
 
         bootstrapResourceProjectActorConsumers(registry, journal)
@@ -48,14 +48,14 @@ abstract class UnitTest: JournalListener<String> {
 
     @AfterEach
     internal fun tearDownWorld() {
-        world.terminate()
+        testWorld.terminate()
     }
 
     fun waitForEvents(a: Int) {
         until = TestUntil.happenings(a)
     }
 
-    fun world() = world.world()
+    fun world() = testWorld.world()
 
     fun appliedEvents(): List<Entry<String>> {
         until.completesWithin(DEFAULT_TIMEOUT)

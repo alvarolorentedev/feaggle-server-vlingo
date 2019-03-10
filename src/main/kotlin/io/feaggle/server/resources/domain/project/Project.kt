@@ -4,7 +4,11 @@ import io.vlingo.lattice.model.DomainEvent
 import java.time.LocalDateTime
 
 interface Project {
-    data class ProjectOwner(
+    data class ProjectId(val boundary: String, val name: String)
+    data class ProjectOwner(val name: String, val email: String)
+    data class ProjectInformation(val description: String, val owners: List<ProjectOwner>)
+
+    data class ProjectOwnerDeclaration(
         val name: String,
         val email: String
     )
@@ -13,12 +17,12 @@ interface Project {
         val boundary: String,
         val name: String,
         val description: String,
-        val owners: List<ProjectOwner>
+        val owners: List<ProjectOwnerDeclaration>
     )
 
-    data class ProjectDescriptionChanged(val newDescription: String, val happened: LocalDateTime): DomainEvent(1)
-    data class ProjectOwnerRemoved(val projectOwner: ProjectOwner, val happened: LocalDateTime): DomainEvent(1)
-    data class ProjectOwnerAdded(val projectOwner: ProjectOwner, val happened: LocalDateTime): DomainEvent(1)
+    data class ProjectDescriptionChanged(val id: ProjectId, val newDescription: String, val happened: LocalDateTime): DomainEvent(1)
+    data class ProjectOwnerRemoved(val id: ProjectId, val declaration: ProjectOwnerDeclaration, val happened: LocalDateTime): DomainEvent(1)
+    data class ProjectOwnerAdded(val id: ProjectId, val declaration: ProjectOwnerDeclaration, val happened: LocalDateTime): DomainEvent(1)
 
     fun build(declaration: ProjectDeclaration)
 }

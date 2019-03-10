@@ -10,10 +10,14 @@ class ProjectTest : UnitTest() {
 
     @BeforeEach
     internal fun setUp() {
-        project = world().actorFor(Project::class.java, ProjectActor::class.java, ProjectId("boundary", "project"),
-            ProjectInformation("..", listOf(
-                ProjectOwner("A", "A@a.com")
-            )))
+        project = world().actorFor(Project::class.java, ProjectActor::class.java,
+            Project.ProjectId("boundary", "project"),
+            Project.ProjectInformation(
+                "..", listOf(
+                    Project.ProjectOwner("A", "A@a.com")
+                )
+            )
+        )
     }
 
     @Test
@@ -29,11 +33,11 @@ class ProjectTest : UnitTest() {
         waitForEvents(2)
         project.build(Project.ProjectDeclaration("boundary", "project", "..",
             listOf(
-                Project.ProjectOwner("B", "B@b.com")
+                Project.ProjectOwnerDeclaration("B", "B@b.com")
             )
         ))
 
-        assertEquals("B", appliedEventAs<Project.ProjectOwnerAdded>(0).projectOwner.name)
-        assertEquals("A", appliedEventAs<Project.ProjectOwnerRemoved>(1).projectOwner.name)
+        assertEquals("B", appliedEventAs<Project.ProjectOwnerAdded>(0).declaration.name)
+        assertEquals("A", appliedEventAs<Project.ProjectOwnerRemoved>(1).declaration.name)
     }
 }

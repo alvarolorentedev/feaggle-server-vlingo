@@ -13,7 +13,7 @@ class BoundaryTest: UnitTest() {
     @BeforeEach
     internal fun setUp() {
         boundary = world().actorFor(
-            Boundary::class.java, BoundaryActor::class.java, Boundary.BoundaryId(UUID.randomUUID(), "boundary")
+            Boundary::class.java, BoundaryActor::class.java, Boundary.BoundaryId("declaration", "boundary")
         )
     }
 
@@ -21,7 +21,7 @@ class BoundaryTest: UnitTest() {
     internal fun shouldDetectChangesInDescription() {
         waitForEvents(1)
 
-        boundary.build(Boundary.BoundaryDeclaration("boundary", "new-description"))
+        boundary.build(Boundary.BoundaryDeclaration("declaration", "boundary", "new-description"))
 
         assertEquals("new-description", appliedEventAs<Boundary.BoundaryDescriptionChanged>(0).newDescription)
     }

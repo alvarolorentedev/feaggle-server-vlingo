@@ -11,7 +11,7 @@ class ProjectTest : UnitTest() {
     @BeforeEach
     internal fun setUp() {
         project = world().actorFor(Project::class.java, ProjectActor::class.java,
-            Project.ProjectId("boundary", "project"),
+            Project.ProjectId("declaration", "boundary", "project"),
             Project.ProjectInformation(
                 "..", listOf(
                     Project.ProjectOwner("A", "A@a.com")
@@ -23,7 +23,7 @@ class ProjectTest : UnitTest() {
     @Test
     internal fun shouldDetectChangesInTheDescription() {
         waitForEvents(1)
-        project.build(Project.ProjectDeclaration("boundary", "project", "new-description", emptyList()))
+        project.build(Project.ProjectDeclaration("declaration", "boundary", "project", "new-description", emptyList()))
 
         assertEquals("new-description", appliedEventAs<Project.ProjectDescriptionChanged>(0).newDescription)
     }
@@ -31,7 +31,7 @@ class ProjectTest : UnitTest() {
     @Test
     internal fun shouldDetectChangesInTheOwners() {
         waitForEvents(2)
-        project.build(Project.ProjectDeclaration("boundary", "project", "..",
+        project.build(Project.ProjectDeclaration("declaration", "boundary", "project", "..",
             listOf(
                 Project.ProjectOwnerDeclaration("B", "B@b.com")
             )

@@ -5,7 +5,7 @@ CREATE TABLE vlingo_symbio_journal (
   entry_metadata     JSONB        NOT NULL,
   entry_type         VARCHAR(256) NOT NULL,
   entry_type_version INTEGER      NOT NULL,
-  stream_name        VARCHAR(128) NOT NULL,
+  stream_name        VARCHAR(1024) NOT NULL,
   stream_version     INTEGER      NOT NULL
 );
 
@@ -13,7 +13,7 @@ CREATE INDEX ON vlingo_symbio_journal (stream_name, stream_version);
 CREATE INDEX ON vlingo_symbio_journal (entry_timestamp);
 
 CREATE TABLE vlingo_symbio_journal_snapshots (
-  stream_name           VARCHAR(128) PRIMARY KEY,
+  stream_name           VARCHAR(1024) PRIMARY KEY,
   snapshot_type         VARCHAR(256) NOT NULL,
   snapshot_type_version INTEGER      NOT NULL,
   snapshot_data         JSONB        NOT NULL,

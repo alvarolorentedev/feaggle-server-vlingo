@@ -15,7 +15,7 @@ class BoundaryActor(
 ): EventSourced(), Boundary {
     constructor(id: Boundary.BoundaryId): this(id, Boundary.BoundaryInformation(""))
 
-    override fun streamName() = "/resource/${id.name}"
+    override fun streamName() = "/declaration/${id.declaration}/boundary/${id.name}"
 
     // Commands
     override fun build(boundaryDeclaration: Boundary.BoundaryDeclaration) {

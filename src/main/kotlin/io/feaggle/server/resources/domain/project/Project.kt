@@ -4,7 +4,7 @@ import io.vlingo.lattice.model.DomainEvent
 import java.time.LocalDateTime
 
 interface Project {
-    data class ProjectId(val boundary: String, val name: String)
+    data class ProjectId(val declaration: String, val boundary: String, val name: String)
     data class ProjectOwner(val name: String, val email: String)
     data class ProjectInformation(val description: String, val owners: List<ProjectOwner>)
 
@@ -14,6 +14,7 @@ interface Project {
     )
 
     data class ProjectDeclaration(
+        val declaration: String,
         val boundary: String,
         val name: String,
         val description: String,

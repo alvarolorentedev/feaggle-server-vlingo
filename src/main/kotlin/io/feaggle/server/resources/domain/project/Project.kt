@@ -1,5 +1,9 @@
 package io.feaggle.server.resources.domain.project
 
+import io.feaggle.server.resources.domain.declaration.Declaration
+import io.feaggle.server.resources.domain.declaration.DeclarationActor
+import io.vlingo.actors.Stage
+import io.vlingo.common.Completes
 import io.vlingo.lattice.model.DomainEvent
 import java.time.LocalDateTime
 
@@ -26,4 +30,14 @@ interface Project {
     data class ProjectOwnerAdded(val id: ProjectId, val declaration: ProjectOwnerDeclaration, val happened: LocalDateTime): DomainEvent(1)
 
     fun build(declaration: ProjectDeclaration)
+}
+
+object Projects {
+    fun oneOf(stage: Stage, id: Project.ProjectId): Completes<Project> {
+        val address = stage.world().addressFactory().from(id.hashCode().toString())
+        val actor = stage.maybeActorOf(Project::class.java, address)
+            .andThen { it.orElse(stage.actorFor(Project::class.java, ProjectActor::class.java, id)) }
+
+        return actor
+    }
 }

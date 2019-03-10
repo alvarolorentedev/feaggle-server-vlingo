@@ -4,12 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import io.feaggle.server.infrastructure.journal.register
 import io.feaggle.server.infrastructure.journal.withConsumer
+import io.feaggle.server.resources.domain.boundary.Boundaries
 import io.feaggle.server.resources.domain.boundary.Boundary
-import io.feaggle.server.resources.domain.boundary.BoundaryActor
 import io.feaggle.server.resources.domain.project.Project
 import io.feaggle.server.resources.domain.project.ProjectActor
+import io.feaggle.server.resources.domain.project.Projects
 import io.feaggle.server.resources.domain.release.Release
 import io.feaggle.server.resources.domain.release.ReleaseActor
+import io.feaggle.server.resources.domain.release.Releases
 import io.vlingo.lattice.model.DomainEvent
 import io.vlingo.lattice.model.sourcing.EventSourced
 import io.vlingo.lattice.model.sourcing.SourcedTypeRegistry
@@ -50,8 +52,8 @@ class DeclarationActor(
                     val boundaryId = Boundary.BoundaryId(id.name, name)
                     val boundaryDeclaration = Boundary.BoundaryDeclaration(id.name, name, value["description"].asText())
 
-                    val boundary = stage().actorFor(Boundary::class.java, BoundaryActor::class.java, boundaryId)
-                    boundary.build(boundaryDeclaration)
+                    Boundaries.oneOf(stage(), boundaryId)
+                        .andThenConsume { it.build(boundaryDeclaration) }
                 }
 
                 "project" -> {
@@ -63,8 +65,8 @@ class DeclarationActor(
 
                     val projectDeclaration = Project.ProjectDeclaration(id.name, boundaryId, name, value["description"].asText(), ownerDeclarations)
 
-                    val project = stage().actorFor(Project::class.java, ProjectActor::class.java, projectId)
-                    project.build(projectDeclaration)
+                    Projects.oneOf(stage(), projectId)
+                        .andThenConsume { it.build(projectDeclaration) }
                 }
 
                 "release" -> {
@@ -75,8 +77,9 @@ class DeclarationActor(
                     val releaseId = Release.ReleaseId(id.name, boundaryId, projectId, name)
 
                     val releaseDeclaration = Release.ReleaseDeclaration(id.name, boundaryId, projectId, name, description, enabled)
-                    val release = stage().actorFor(Release::class.java, ReleaseActor::class.java, releaseId)
-                    release.build(releaseDeclaration)
+
+                    Releases.oneOf(stage(), releaseId)
+                        .andThenConsume { it.build(releaseDeclaration) }
                 }
 
             }

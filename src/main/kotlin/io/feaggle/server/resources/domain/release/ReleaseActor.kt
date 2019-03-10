@@ -7,21 +7,18 @@ import io.vlingo.lattice.model.sourcing.SourcedTypeRegistry
 import io.vlingo.symbio.store.journal.Journal
 import java.time.LocalDateTime
 
-data class ReleaseId(val boundary: String, val project: String, val name: String)
-data class ReleaseInformation(val description: String)
-
 class ReleaseActor(
-    val id: ReleaseId,
-    var information: ReleaseInformation
+    val id: Release.ReleaseId,
+    var information: Release.ReleaseInformation
 ): EventSourced(), Release {
-    constructor(id: ReleaseId): this(id, ReleaseInformation(""))
+    constructor(id: Release.ReleaseId): this(id, Release.ReleaseInformation(""))
 
     override fun streamName() = "/resource/${id.boundary}/project/${id.project}/release/${id.name}"
 
     // Command
     override fun build(releaseDeclaration: Release.ReleaseDeclaration) {
         if (information.description != releaseDeclaration.description) {
-            apply(Release.ReleaseDescriptionChanged(releaseDeclaration.description, LocalDateTime.now()))
+            apply(Release.ReleaseDescriptionChanged(id, releaseDeclaration.description, LocalDateTime.now()))
         }
     }
 

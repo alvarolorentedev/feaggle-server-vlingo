@@ -11,7 +11,7 @@ class ReleaseTest: UnitTest() {
     @BeforeEach
     internal fun setUp() {
         release = world().actorFor(
-            Release::class.java, ReleaseActor::class.java, ReleaseId("boundary", "project", "my-release")
+            Release::class.java, ReleaseActor::class.java, Release.ReleaseId("boundary", "project", "my-release")
         )
     }
 

@@ -31,6 +31,8 @@ val junitVersion = "5.4.0"
 val flywayVersion = "5.2.4"
 val restAssuredVersion = "3.3.0"
 val logbackVersion = "1.2.3"
+val jacksonVersion = "2.9.8"
+val floggerVersion = "0.3.1"
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
@@ -43,6 +45,11 @@ dependencies {
     implementation("org.flywaydb:flyway-core:$flywayVersion")
     implementation("io.feaggle:feaggle:$feaggleVersion")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
+    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jacksonVersion")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
+    implementation("com.google.flogger:flogger:$floggerVersion")
+    implementation("com.google.flogger:flogger-system-backend:$floggerVersion")
 
     testImplementation("org.testcontainers:testcontainers:$testContainersVersion")
     testImplementation("org.testcontainers:postgresql:$testContainersVersion")

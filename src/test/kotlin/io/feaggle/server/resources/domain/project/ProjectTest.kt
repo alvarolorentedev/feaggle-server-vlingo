@@ -1,0 +1,23 @@
+package io.feaggle.server.resources.domain.project
+
+import io.feaggle.server.base.UnitTest
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+
+class ProjectTest : UnitTest() {
+    private lateinit var project: Project
+
+    @BeforeEach
+    internal fun setUp() {
+        project = world().actorFor(Project::class.java, ProjectActor::class.java, ProjectId("boundary", "project"))
+    }
+
+    @Test
+    internal fun shouldDetectChangesInTheDescription() {
+        waitForEvents(1)
+        project.build(Project.ProjectDeclaration("boundary", "project", "new-description", emptyList()))
+
+        assertEquals("new-description", appliedEventAs<Project.ProjectDescriptionChanged>(0).newDescription)
+    }
+}

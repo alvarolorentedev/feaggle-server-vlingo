@@ -57,7 +57,7 @@ abstract class UnitTest: JournalListener<String> {
         return appliedEvents
     }
 
-    inline fun <reified T: DomainEvent> appliedEventAs(idx: Int): T = Gson().fromJson(appliedEvents()[0].entryData, T::class.java)
+    inline fun <reified T: DomainEvent> appliedEventAs(idx: Int): T = Gson().fromJson(appliedEvents()[idx].entryData, T::class.java)
 
     override fun appendedAll(entries: MutableList<Entry<String>>?) {
         logger.atInfo().log("appendedAll: %s", entries!!.joinToString())

@@ -22,9 +22,8 @@ class ProjectActor(
     override fun streamName() = "/resource/${id.boundary}/project/${id.name}"
 
     // Commands
-    override fun build(declaration: Project.ProjectDeclaration): Completes<Project.ProjectBuildResult> {
+    override fun build(declaration: Project.ProjectDeclaration) {
         apply(eventsIfDescriptionChange(declaration.description) + eventsIfOwnersChange(declaration.owners))
-        return completes<Project.ProjectBuildResult>().with(Project.ProjectBuildSuccess)
     }
 
     private fun eventsIfDescriptionChange(description: String): List<DomainEvent> {

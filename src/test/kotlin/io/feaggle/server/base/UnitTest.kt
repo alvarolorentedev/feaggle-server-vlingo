@@ -4,6 +4,7 @@ import com.google.common.flogger.FluentLogger
 import com.google.gson.Gson
 import io.feaggle.server.resources.domain.boundary.bootstrapBoundaryActorConsumers
 import io.feaggle.server.resources.domain.project.bootstrapResourceProjectActorConsumers
+import io.feaggle.server.resources.domain.release.bootstrapReleaseActorConsumers
 import io.vlingo.actors.testkit.TestUntil
 import io.vlingo.actors.testkit.TestWorld
 import io.vlingo.lattice.model.DomainEvent
@@ -38,6 +39,7 @@ abstract class UnitTest: JournalListener<String> {
 
         bootstrapResourceProjectActorConsumers(registry, journal)
         bootstrapBoundaryActorConsumers(registry, journal)
+        bootstrapReleaseActorConsumers(registry, journal)
 
         mutexName = UUID.randomUUID().toString()
     }

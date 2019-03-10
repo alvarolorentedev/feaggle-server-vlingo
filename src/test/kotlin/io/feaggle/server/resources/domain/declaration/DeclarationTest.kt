@@ -36,6 +36,26 @@ class DeclarationTest: UnitTest() {
     }
 
     @Test
+    internal fun shouldDetectDroppedResources() {
+        declaration = world().actorFor(
+            Declaration::class.java, DeclarationActor::class.java, Declaration.DeclarationId("declaration"), setOf<String>("my-boundary")
+        )
+
+        waitForEvents(1)
+
+        declaration.build(
+            """
+                declaration:
+                    version: 0.0.1
+                    resources:
+            """.trimIndent()
+        )
+
+        val events = appliedEvents()
+        assertTrue(events.any { it.type.endsWith("DeclarationResourceDropped") })
+    }
+
+    @Test
     internal fun shouldDetectNewProjects() {
         waitForEvents(6)
 

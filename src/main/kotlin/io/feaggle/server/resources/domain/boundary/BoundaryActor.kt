@@ -8,21 +8,19 @@ import io.vlingo.symbio.store.journal.Journal
 import java.time.LocalDateTime
 import java.util.*
 
-data class BoundaryId(val id: UUID, val name: String)
-data class BoundaryInformation(val description: String)
 
 class BoundaryActor(
-    val id: BoundaryId,
-    var information: BoundaryInformation
+    val id: Boundary.BoundaryId,
+    var information: Boundary.BoundaryInformation
 ): EventSourced(), Boundary {
-    constructor(id: BoundaryId): this(id, BoundaryInformation(""))
+    constructor(id: Boundary.BoundaryId): this(id, Boundary.BoundaryInformation(""))
 
     override fun streamName() = "/resource/${id.name}"
 
     // Commands
     override fun build(boundaryDeclaration: Boundary.BoundaryDeclaration) {
         if (information.description != boundaryDeclaration.description) {
-            apply(Boundary.BoundaryDescriptionChanged(boundaryDeclaration.description, LocalDateTime.now()))
+            apply(Boundary.BoundaryDescriptionChanged(id, boundaryDeclaration.description, LocalDateTime.now()))
         }
     }
 

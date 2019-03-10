@@ -13,7 +13,7 @@ class BoundaryTest: UnitTest() {
     @BeforeEach
     internal fun setUp() {
         boundary = world().actorFor(
-            Boundary::class.java, BoundaryActor::class.java, BoundaryId(UUID.randomUUID(), "boundary")
+            Boundary::class.java, BoundaryActor::class.java, Boundary.BoundaryId(UUID.randomUUID(), "boundary")
         )
     }
 

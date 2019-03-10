@@ -25,7 +25,7 @@ repositories {
 }
 
 val feaggleVersion = "0.1.0"
-val vlingoVersion = "0.8.1"
+val vlingoVersion = "0.8.2"
 val testContainersVersion = "1.10.6"
 val junitVersion = "5.4.0"
 val flywayVersion = "5.2.4"

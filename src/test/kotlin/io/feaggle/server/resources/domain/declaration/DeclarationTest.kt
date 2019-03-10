@@ -14,22 +14,54 @@ class DeclarationTest: UnitTest() {
             Declaration::class.java, DeclarationActor::class.java, Declaration.DeclarationId("declaration")
         )
     }
-//
-//    @Test
-//    internal fun shouldDetectNewBoundaries() {
-//        waitForEvents(2)
-//
-//        declaration.build(
-//            """
-//                declaration:
-//                    my-boundary:
-//                        is-a: Boundary
-//                        description: My first boundary!
-//            """.trimIndent()
-//        )
-//
-//        val events = appliedEvents()
-//        assertTrue(events.any { it.type.endsWith("BoundaryDescriptionChanged") })
-//        assertTrue(events.any { it.type.endsWith("DeclarationResourceFound") })
-//    }
+
+    @Test
+    internal fun shouldDetectNewBoundaries() {
+        waitForEvents(2)
+
+        declaration.build(
+            """
+                declaration:
+                    version: 0.0.1
+                    resources:
+                        my-boundary:
+                            is-a: boundary
+                            description: My first boundary!
+            """.trimIndent()
+        )
+
+        val events = appliedEvents()
+        assertTrue(events.any { it.type.endsWith("DeclarationResourceFound") })
+        assertTrue(events.any { it.type.endsWith("BoundaryDescriptionChanged") })
+    }
+
+    @Test
+    internal fun shouldDetectNewProjects() {
+        waitForEvents(6)
+
+        declaration.build(
+            """
+                declaration:
+                    version: 0.0.1
+                    resources:
+                        my-boundary:
+                            is-a: boundary
+                            description: My first boundary!
+                        my-project:
+                            is-a: project
+                            in-boundary: my-boundary
+                            description: My first project!
+                            owners:
+                                - name: John
+                                  email: john-email@feaggle.com
+                                - name: Bob
+                                  email: bob-email@feaggle.com
+            """.trimIndent()
+        )
+
+        val events = appliedEvents()
+        assertTrue(events.any { it.type.endsWith("DeclarationResourceFound") })
+        assertTrue(events.any { it.type.endsWith("ProjectDescriptionChanged") })
+        assertTrue(events.any { it.type.endsWith("ProjectOwnerAdded") })
+    }
 }

@@ -3,6 +3,7 @@ package io.feaggle.server.base
 import com.google.common.flogger.FluentLogger
 import com.google.gson.Gson
 import io.feaggle.server.resources.domain.boundary.bootstrapBoundaryActorConsumers
+import io.feaggle.server.resources.domain.declaration.bootstrapDeclarationActorConsumers
 import io.feaggle.server.resources.domain.project.bootstrapResourceProjectActorConsumers
 import io.feaggle.server.resources.domain.release.bootstrapReleaseActorConsumers
 import io.vlingo.actors.testkit.TestUntil
@@ -18,10 +19,10 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import java.util.*
 
-private const val DEFAULT_TIMEOUT: Long = 10000
+private const val DEFAULT_TIMEOUT: Long = 60000
 
 abstract class UnitTest: JournalListener<String> {
-    protected val logger = FluentLogger.forEnclosingClass()
+    private val logger = FluentLogger.forEnclosingClass()
 
     private lateinit var mutexName: String
     private lateinit var world: TestWorld
@@ -40,6 +41,7 @@ abstract class UnitTest: JournalListener<String> {
         bootstrapResourceProjectActorConsumers(registry, journal)
         bootstrapBoundaryActorConsumers(registry, journal)
         bootstrapReleaseActorConsumers(registry, journal)
+        bootstrapDeclarationActorConsumers(registry, journal)
 
         mutexName = UUID.randomUUID().toString()
     }

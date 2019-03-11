@@ -7,10 +7,8 @@ import io.feaggle.server.infrastructure.journal.withConsumer
 import io.feaggle.server.resources.domain.boundary.Boundaries
 import io.feaggle.server.resources.domain.boundary.Boundary
 import io.feaggle.server.resources.domain.project.Project
-import io.feaggle.server.resources.domain.project.ProjectActor
 import io.feaggle.server.resources.domain.project.Projects
 import io.feaggle.server.resources.domain.release.Release
-import io.feaggle.server.resources.domain.release.ReleaseActor
 import io.feaggle.server.resources.domain.release.Releases
 import io.vlingo.lattice.model.DomainEvent
 import io.vlingo.lattice.model.sourcing.EventSourced
@@ -23,9 +21,10 @@ private const val EXPECTED_VERSION = "0.0.1"
 class DeclarationActor(
     val id: Declaration.DeclarationId,
     var resources: Set<String>
-): EventSourced(), Declaration {
+) : EventSourced(), Declaration {
     private val mapper = ObjectMapper(YAMLFactory())
-    constructor(id: Declaration.DeclarationId): this(id, emptySet())
+
+    constructor(id: Declaration.DeclarationId) : this(id, emptySet())
 
     override fun streamName() = "/declaration/${id.name}"
 
@@ -47,7 +46,7 @@ class DeclarationActor(
             val name = it.key
             val value = it.value
 
-            when(value["is-a"].asText()) {
+            when (value["is-a"].asText()) {
                 "boundary" -> {
                     val boundaryId = Boundary.BoundaryId(id.name, name)
                     val boundaryDeclaration = Boundary.BoundaryDeclaration(id.name, name, value["description"].asText())
@@ -63,7 +62,13 @@ class DeclarationActor(
                         Project.ProjectOwnerDeclaration(it["name"].asText(), it["email"].asText())
                     }
 
-                    val projectDeclaration = Project.ProjectDeclaration(id.name, boundaryId, name, value["description"].asText(), ownerDeclarations)
+                    val projectDeclaration = Project.ProjectDeclaration(
+                        id.name,
+                        boundaryId,
+                        name,
+                        value["description"].asText(),
+                        ownerDeclarations
+                    )
 
                     Projects.oneOf(stage(), projectId)
                         .andThenConsume { it.build(projectDeclaration) }
@@ -76,7 +81,8 @@ class DeclarationActor(
                     val enabled = value["enabled"].asBoolean()
                     val releaseId = Release.ReleaseId(id.name, boundaryId, projectId, name)
 
-                    val releaseDeclaration = Release.ReleaseDeclaration(id.name, boundaryId, projectId, name, description, enabled)
+                    val releaseDeclaration =
+                        Release.ReleaseDeclaration(id.name, boundaryId, projectId, name, description, enabled)
 
                     Releases.oneOf(stage(), releaseId)
                         .andThenConsume { it.build(releaseDeclaration) }

@@ -12,13 +12,13 @@ import io.vlingo.http.resource.ResourceBuilder.*
 import io.vlingo.symbio.store.journal.Journal
 import java.util.*
 
-class ReleaseToggleController(private val world: World, private val journal: Journal<String>, private val poolSize: Int) {
+class ReleaseToggleController(private val world: World, private val journal: Journal<String>) {
     private val logger = world.defaultLogger()
 
     data class CreateReleaseCommand(val name: String)
     data class ChangeReleaseStatusCommand(val enabled: Boolean)
 
-    fun asResource() = resource(
+    fun asResource(poolSize: Int) = resource(
         "releases", poolSize,
         get("/release/{id}")
             .param(String::class.java)

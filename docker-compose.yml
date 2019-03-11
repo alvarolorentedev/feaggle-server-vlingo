@@ -21,5 +21,6 @@ services:
       FEAGGLE_JDBC_URL: "jdbc:postgresql://postgres:5432/feaggle"
       FEAGGLE_JDBC_USER: "feaggle"
       FEAGGLE_JDBC_PASSWORD: "happy-pwd"
+      FEAGGLE_PORT: 9092
     depends_on:
       - postgres

@@ -5,6 +5,11 @@ import io.feaggle.server.domain.releases.registerReleaseActorConsumers
 import io.feaggle.server.infrastructure.journal.NoopConfigurationInterest
 import io.feaggle.server.infrastructure.journal.NoopJournalListener
 import io.feaggle.server.infrastructure.resources.ReleaseToggleController
+import io.feaggle.server.resources.domain.boundary.bootstrapBoundaryActorConsumers
+import io.feaggle.server.resources.domain.declaration.bootstrapDeclarationActorConsumers
+import io.feaggle.server.resources.domain.project.bootstrapResourceProjectActorConsumers
+import io.feaggle.server.resources.domain.release.bootstrapReleaseActorConsumers
+import io.feaggle.server.resources.infrastructure.declaration.DeclarationController
 import io.vlingo.actors.World
 import io.vlingo.http.resource.Resources
 import io.vlingo.http.resource.Server
@@ -68,6 +73,10 @@ class ApplicationServer(
     private fun initJournalConsumers() {
         registerReleaseActorConsumers(registry, journal)
         registerLibraryConsumers(registry, journal)
+        bootstrapResourceProjectActorConsumers(registry, journal)
+        bootstrapBoundaryActorConsumers(registry, journal)
+        bootstrapReleaseActorConsumers(registry, journal)
+        bootstrapDeclarationActorConsumers(registry, journal)
     }
 
     private fun initRegistry() {
@@ -76,7 +85,8 @@ class ApplicationServer(
 
     private fun initServer() {
         val resources = Resources.are(
-            ReleaseToggleController(world, journal, 10).asResource()
+            ReleaseToggleController(world, journal).asResource(10),
+            DeclarationController(world).asResource(10)
         )
 
         server = Server.startWith(world.stage(),

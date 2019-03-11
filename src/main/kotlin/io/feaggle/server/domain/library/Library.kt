@@ -9,16 +9,15 @@ import java.time.LocalDateTime
 import java.util.*
 
 interface Library {
-    data class SingleRelease(val name: String, val enabled: Boolean, val lastChange: Long)
-    data class Releases(val state: MutableMap<UUID, SingleRelease>)
+    data class SingleRelease(val name: String, val description: String, val enabled: Boolean, val lastChange: Long)
     data class ReleaseInfoChanged(
-        val release: UUID,
-        val name: String,
-        val status: Boolean,
+        val release: String,
+        val description: String?,
+        val status: Boolean?,
         val happened: LocalDateTime
     ): DomainEvent(1)
 
-    fun state(): Completes<Releases>
+    fun releases(): Completes<List<SingleRelease>>
 }
 
 private const val addressId = "0"

@@ -1,7 +1,6 @@
 package io.feaggle.server
 
-import io.feaggle.server.domain.library.registerLibraryConsumers
-import io.feaggle.server.domain.releases.registerReleaseActorConsumers
+import io.feaggle.server.domain.library.bootstrapLibraryConsumers
 import io.feaggle.server.infrastructure.journal.NoopConfigurationInterest
 import io.feaggle.server.infrastructure.journal.NoopJournalListener
 import io.feaggle.server.infrastructure.resources.ReleaseToggleController
@@ -71,8 +70,7 @@ class ApplicationServer(
     }
 
     private fun initJournalConsumers() {
-        registerReleaseActorConsumers(registry, journal)
-        registerLibraryConsumers(registry, journal)
+        bootstrapLibraryConsumers(registry, journal)
         bootstrapResourceProjectActorConsumers(registry, journal)
         bootstrapBoundaryActorConsumers(registry, journal)
         bootstrapReleaseActorConsumers(registry, journal)

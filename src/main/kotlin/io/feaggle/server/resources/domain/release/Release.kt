@@ -1,14 +1,15 @@
 package io.feaggle.server.resources.domain.release
 
-import io.feaggle.server.resources.domain.project.Project
-import io.feaggle.server.resources.domain.project.ProjectActor
 import io.vlingo.actors.Stage
 import io.vlingo.common.Completes
 import io.vlingo.lattice.model.DomainEvent
 import java.time.LocalDateTime
 
 interface Release {
-    data class ReleaseId(val declaration: String, val boundary: String, val project: String, val name: String)
+    data class ReleaseId(val declaration: String, val boundary: String, val project: String, val name: String) {
+        fun toPublicIdentifier() = "$declaration/$boundary/$project/$name"
+    }
+
     data class ReleaseInformation(val description: String)
     data class ReleaseStatus(val enabled: Boolean)
 

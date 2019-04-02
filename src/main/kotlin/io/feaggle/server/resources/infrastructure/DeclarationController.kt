@@ -1,4 +1,4 @@
-package io.feaggle.server.resources.infrastructure.declaration
+package io.feaggle.server.resources.infrastructure
 
 import com.google.common.flogger.FluentLogger
 import io.feaggle.server.infrastructure.http.answerJson

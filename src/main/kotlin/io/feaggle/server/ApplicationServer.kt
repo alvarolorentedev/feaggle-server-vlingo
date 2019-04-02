@@ -4,11 +4,10 @@ import io.feaggle.server.domain.library.bootstrapLibraryConsumers
 import io.feaggle.server.infrastructure.journal.NoopConfigurationInterest
 import io.feaggle.server.infrastructure.journal.NoopJournalListener
 import io.feaggle.server.infrastructure.resources.ReleaseToggleController
-import io.feaggle.server.resources.domain.boundary.bootstrapBoundaryActorConsumers
 import io.feaggle.server.resources.domain.declaration.bootstrapDeclarationActorConsumers
 import io.feaggle.server.resources.domain.project.bootstrapResourceProjectActorConsumers
 import io.feaggle.server.resources.domain.release.bootstrapReleaseActorConsumers
-import io.feaggle.server.resources.infrastructure.declaration.DeclarationController
+import io.feaggle.server.resources.infrastructure.DeclarationController
 import io.vlingo.actors.World
 import io.vlingo.http.resource.Resources
 import io.vlingo.http.resource.Server
@@ -72,7 +71,6 @@ class ApplicationServer(
     private fun initJournalConsumers() {
         bootstrapLibraryConsumers(registry, journal)
         bootstrapResourceProjectActorConsumers(registry, journal)
-        bootstrapBoundaryActorConsumers(registry, journal)
         bootstrapReleaseActorConsumers(registry, journal)
         bootstrapDeclarationActorConsumers(registry, journal)
     }

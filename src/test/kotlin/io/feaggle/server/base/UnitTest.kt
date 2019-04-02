@@ -2,7 +2,6 @@ package io.feaggle.server.base
 
 import com.google.common.flogger.FluentLogger
 import com.google.gson.Gson
-import io.feaggle.server.resources.domain.boundary.bootstrapBoundaryActorConsumers
 import io.feaggle.server.resources.domain.declaration.bootstrapDeclarationActorConsumers
 import io.feaggle.server.resources.domain.project.bootstrapResourceProjectActorConsumers
 import io.feaggle.server.resources.domain.release.bootstrapReleaseActorConsumers
@@ -39,7 +38,6 @@ abstract class UnitTest: JournalListener<String> {
         appliedEvents = emptyList()
 
         bootstrapResourceProjectActorConsumers(registry, journal)
-        bootstrapBoundaryActorConsumers(registry, journal)
         bootstrapReleaseActorConsumers(registry, journal)
         bootstrapDeclarationActorConsumers(registry, journal)
 

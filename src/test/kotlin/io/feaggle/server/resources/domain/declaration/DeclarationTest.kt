@@ -16,29 +16,9 @@ class DeclarationTest: UnitTest() {
     }
 
     @Test
-    internal fun shouldDetectNewBoundaries() {
-        waitForEvents(2)
-
-        declaration.build(
-            """
-                declaration:
-                    version: 0.0.1
-                    resources:
-                        my-boundary:
-                            is-a: boundary
-                            description: My first boundary!
-            """.trimIndent()
-        )
-
-        val events = appliedEvents()
-        assertTrue(events.any { it.type.endsWith("DeclarationResourceFound") })
-        assertTrue(events.any { it.type.endsWith("BoundaryDescriptionChanged") })
-    }
-
-    @Test
     internal fun shouldDetectDroppedResources() {
         declaration = world().actorFor(
-            Declaration::class.java, DeclarationActor::class.java, Declaration.DeclarationId("declaration"), setOf<String>("my-boundary")
+            Declaration::class.java, DeclarationActor::class.java, Declaration.DeclarationId("declaration"), setOf("my-boundary")
         )
 
         waitForEvents(1)
@@ -57,19 +37,15 @@ class DeclarationTest: UnitTest() {
 
     @Test
     internal fun shouldDetectNewProjects() {
-        waitForEvents(6)
+        waitForEvents(3)
 
         declaration.build(
             """
                 declaration:
                     version: 0.0.1
                     resources:
-                        my-boundary:
-                            is-a: boundary
-                            description: My first boundary!
                         my-project:
                             is-a: project
-                            in-boundary: my-boundary
                             description: My first project!
                             owners:
                                 - name: John
@@ -87,19 +63,15 @@ class DeclarationTest: UnitTest() {
 
     @Test
     internal fun shouldDetectNewReleases() {
-        waitForEvents(9)
+        waitForEvents(7)
 
         declaration.build(
             """
                 declaration:
                     version: 0.0.1
                     resources:
-                        my-boundary:
-                            is-a: boundary
-                            description: My first boundary!
                         my-project:
                             is-a: project
-                            in-boundary: my-boundary
                             description: My first project!
                             owners:
                                 - name: John
@@ -108,7 +80,6 @@ class DeclarationTest: UnitTest() {
                                   email: bob-email@feaggle.com
                         my-release:
                             is-a: release
-                            in-boundary: my-boundary
                             in-project: my-project
                             description: My first release!
                             enabled: true

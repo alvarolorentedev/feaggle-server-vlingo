@@ -11,7 +11,7 @@ class ReleaseTest: UnitTest() {
     @BeforeEach
     internal fun setUp() {
         release = world().actorFor(
-            Release::class.java, ReleaseActor::class.java, Release.ReleaseId("declaration", "boundary", "project", "my-release")
+            Release::class.java, ReleaseActor::class.java, Release.ReleaseId("declaration",  "project", "my-release")
         )
     }
 
@@ -19,7 +19,7 @@ class ReleaseTest: UnitTest() {
     internal fun shouldDetectChangesInDescription() {
         waitForEvents(1)
 
-        release.build(Release.ReleaseDeclaration("declaration", "boundary", "project", "my-release", "new-description", false))
+        release.build(Release.ReleaseDeclaration("declaration", "project", "my-release", "new-description", false))
 
         assertEquals(
             "new-description",
@@ -31,7 +31,7 @@ class ReleaseTest: UnitTest() {
     internal fun shouldDetectChangesInTheStatus() {
         waitForEvents(1)
 
-        release.build(Release.ReleaseDeclaration("declaration", "boundary", "project", "my-release", "", true))
+        release.build(Release.ReleaseDeclaration("declaration", "project", "my-release", "", true))
 
         assertEquals(
             true,

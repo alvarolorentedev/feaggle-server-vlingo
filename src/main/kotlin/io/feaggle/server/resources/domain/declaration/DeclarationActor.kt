@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import io.feaggle.server.infrastructure.journal.register
 import io.feaggle.server.infrastructure.journal.withConsumer
-import io.feaggle.server.resources.domain.boundary.Boundaries
-import io.feaggle.server.resources.domain.boundary.Boundary
 import io.feaggle.server.resources.domain.project.Project
 import io.feaggle.server.resources.domain.project.Projects
 import io.feaggle.server.resources.domain.release.Release
@@ -47,24 +45,14 @@ class DeclarationActor(
             val value = it.value
 
             when (value["is-a"].asText()) {
-                "boundary" -> {
-                    val boundaryId = Boundary.BoundaryId(id.name, name)
-                    val boundaryDeclaration = Boundary.BoundaryDeclaration(id.name, name, value["description"].asText())
-
-                    Boundaries.oneOf(stage(), boundaryId)
-                        .andThenConsume { it.build(boundaryDeclaration) }
-                }
-
                 "project" -> {
-                    val boundaryId = value["in-boundary"].asText()
-                    val projectId = Project.ProjectId(id.name, boundaryId, name)
+                    val projectId = Project.ProjectId(id.name, name)
                     val ownerDeclarations = value["owners"].map {
                         Project.ProjectOwnerDeclaration(it["name"].asText(), it["email"].asText())
                     }
 
                     val projectDeclaration = Project.ProjectDeclaration(
                         id.name,
-                        boundaryId,
                         name,
                         value["description"].asText(),
                         ownerDeclarations
@@ -75,14 +63,13 @@ class DeclarationActor(
                 }
 
                 "release" -> {
-                    val boundaryId = value["in-boundary"].asText()
                     val projectId = value["in-project"].asText()
                     val description = value["description"].asText()
                     val enabled = value["enabled"].asBoolean()
-                    val releaseId = Release.ReleaseId(id.name, boundaryId, projectId, name)
+                    val releaseId = Release.ReleaseId(id.name,  projectId, name)
 
                     val releaseDeclaration =
-                        Release.ReleaseDeclaration(id.name, boundaryId, projectId, name, description, enabled)
+                        Release.ReleaseDeclaration(id.name,  projectId, name, description, enabled)
 
                     Releases.oneOf(stage(), releaseId)
                         .andThenConsume { it.build(releaseDeclaration) }

@@ -14,23 +14,4 @@ class ReleaseToggleTest: Specification() {
         given().get("/release/$releaseId").then()
             .statusCode(404)
     }
-
-    @Test
-    internal fun queryRelease_IfCreatedBefore_Returns200() {
-        val toggleName = UUID.randomUUID().toString()
-
-        val response = given()
-            .body("""{"name": "$toggleName"}""")
-            .post("/release")
-            .andReturn()
-            .body()
-
-        val responseJson = response.print()
-        val toggleId = response.jsonPath().getString("id")
-
-        given().get("/release/$toggleId")
-            .then()
-            .statusCode(200)
-            .body(equalTo(responseJson))
-    }
 }

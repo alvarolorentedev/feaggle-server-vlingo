@@ -6,14 +6,14 @@ import io.vlingo.lattice.model.DomainEvent
 import java.time.LocalDateTime
 
 interface Release {
-    data class ReleaseId(val declaration: String, val boundary: String, val project: String, val name: String) {
-        fun toPublicIdentifier() = "$declaration/$boundary/$project/$name"
+    data class ReleaseId(val declaration: String, val project: String, val name: String) {
+        fun toPublicIdentifier() = "$declaration/$project/$name"
     }
 
     data class ReleaseInformation(val description: String)
     data class ReleaseStatus(val enabled: Boolean)
 
-    data class ReleaseDeclaration(val declaration: String, val boundary: String, val project: String, val name: String, val description: String, val enabled: Boolean)
+    data class ReleaseDeclaration(val declaration: String, val project: String, val name: String, val description: String, val enabled: Boolean)
     data class ReleaseDescriptionChanged(val id: ReleaseId, val newDescription: String, val happened: LocalDateTime): DomainEvent(1)
     data class ReleaseStatusChanged(val id: ReleaseId, val newStatus: Boolean, val happened: LocalDateTime): DomainEvent(1)
 

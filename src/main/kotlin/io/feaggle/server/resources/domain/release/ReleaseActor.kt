@@ -14,7 +14,7 @@ class ReleaseActor(
 ): EventSourced(), Release {
     constructor(id: Release.ReleaseId): this(id, Release.ReleaseInformation(""), Release.ReleaseStatus(false))
 
-    override fun streamName() = "/declaration/${id.declaration}/boundary/${id.boundary}/project/${id.project}/${id.name}"
+    override fun streamName() = "/declaration/${id.declaration}/project/${id.project}/${id.name}"
 
     // Command
     override fun build(releaseDeclaration: Release.ReleaseDeclaration) {

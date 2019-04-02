@@ -81,7 +81,7 @@ class DeclarationActor(
                 "release" -> {
                     val projectId = value["in-project"].asText()
                     val description = value["description"].asText()
-                    val enabled = value["enabled"].asBoolean()
+                    val enabled = value["active"].asBoolean()
                     val releaseId = Release.ReleaseId(id.name,  projectId, name)
 
                     val releaseDeclaration =

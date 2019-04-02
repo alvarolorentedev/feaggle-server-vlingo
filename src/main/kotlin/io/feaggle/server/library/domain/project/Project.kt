@@ -24,7 +24,7 @@ import io.vlingo.symbio.store.journal.Journal
 import java.time.LocalDateTime
 
 interface Project {
-    data class Release(val name: String, val description: String, val enabled: Boolean, val lastChange: Long)
+    data class Release(val name: String, val description: String, val active: Boolean, val lastChange: Long)
     data class ReleaseInfoChanged(
         val release: String,
         val description: String?,

@@ -28,8 +28,8 @@ import java.time.LocalDateTime
 class ProjectActor(
     private val id: Project.ProjectId,
     private var information: Project.ProjectInformation
-): EventSourced(), Project {
-    constructor(id: Project.ProjectId): this(id, Project.ProjectInformation("", emptyList()))
+) : EventSourced(), Project {
+    constructor(id: Project.ProjectId) : this(id, Project.ProjectInformation("", emptyList()))
 
     override fun streamName() = "/declaration/${id.declaration}/project/${id.name}"
 
@@ -47,11 +47,19 @@ class ProjectActor(
     }
 
     private fun eventsIfOwnersChange(ownerDeclarations: List<Project.ProjectOwnerDeclaration>): List<DomainEvent> {
-        val ownersToAdd = ownerDeclarations.filter { owner -> !information.owners.any { owner.name == it.name && owner.email == it.email } }
-        val ownersToRemove = information.owners.filter { owner -> !ownerDeclarations.any { owner.name == it.name && owner.email == it.email } }
+        val ownersToAdd =
+            ownerDeclarations.filter { owner -> !information.owners.any { owner.name == it.name && owner.email == it.email } }
+        val ownersToRemove =
+            information.owners.filter { owner -> !ownerDeclarations.any { owner.name == it.name && owner.email == it.email } }
 
         return ownersToAdd.map { Project.ProjectOwnerAdded(id, it, LocalDateTime.now()) } +
-                ownersToRemove.map { Project.ProjectOwnerRemoved(id, Project.ProjectOwnerDeclaration(it.name, it.email), LocalDateTime.now()) }
+                ownersToRemove.map {
+                    Project.ProjectOwnerRemoved(
+                        id,
+                        Project.ProjectOwnerDeclaration(it.name, it.email),
+                        LocalDateTime.now()
+                    )
+                }
     }
 
     // Events
@@ -60,18 +68,20 @@ class ProjectActor(
     }
 
     fun whenOwnerHasBeenAdded(event: Project.ProjectOwnerAdded) {
-        this.information = information.copy(owners = information.owners + Project.ProjectOwner(
-            event.declaration.name,
-            event.declaration.email
-        )
+        this.information = information.copy(
+            owners = information.owners + Project.ProjectOwner(
+                event.declaration.name,
+                event.declaration.email
+            )
         )
     }
 
     fun whenOwnerHasBeenRemoved(event: Project.ProjectOwnerRemoved) {
-        this.information = information.copy(owners = information.owners - Project.ProjectOwner(
-            event.declaration.name,
-            event.declaration.email
-        )
+        this.information = information.copy(
+            owners = information.owners - Project.ProjectOwner(
+                event.declaration.name,
+                event.declaration.email
+            )
         )
     }
 }

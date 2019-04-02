@@ -38,8 +38,8 @@ class ReleaseActor(
             apply(Release.ReleaseDescriptionChanged(id, releaseDeclaration.description, LocalDateTime.now()))
         }
 
-        if (status.enabled != releaseDeclaration.enabled) {
-            apply(Release.ReleaseStatusChanged(id, releaseDeclaration.enabled, LocalDateTime.now()))
+        if (status.enabled != releaseDeclaration.active) {
+            apply(Release.ReleaseStatusChanged(id, releaseDeclaration.active, LocalDateTime.now()))
         }
     }
 

@@ -17,9 +17,8 @@
 package io.feaggle.server.specs
 
 import io.feaggle.server.base.Specification
-import io.restassured.RestAssured.*
+import io.restassured.RestAssured.given
 import org.hamcrest.CoreMatchers.equalTo
-import org.hamcrest.Matchers.lessThan
 import org.junit.jupiter.api.Test
 
 class ReleaseQueryTest: Specification() {
@@ -31,9 +30,9 @@ class ReleaseQueryTest: Specification() {
             given()
                 .get("/my-project/toggles")
                 .then()
-                .time(lessThan(5000L))
                 .statusCode(200)
                 .body("releases[0].name", equalTo("my-release"))
+                .body("releases[0].active", equalTo(true))
         }
     }
 }

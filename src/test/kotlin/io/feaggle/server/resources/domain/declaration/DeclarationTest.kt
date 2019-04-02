@@ -98,7 +98,7 @@ class DeclarationTest: UnitTest() {
                             is-a: release
                             in-project: my-project
                             description: My first release!
-                            enabled: true
+                            active: true
             """.trimIndent()
         )
 

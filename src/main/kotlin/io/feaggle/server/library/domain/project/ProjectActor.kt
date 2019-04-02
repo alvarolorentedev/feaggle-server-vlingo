@@ -55,7 +55,7 @@ class ProjectActor(val projectId: String, journal: Journal<String>) : EventSourc
 
         val currentRelease = releases.getOrDefault(info.release, Project.Release(info.release, "", false, 0L))
         releases[info.release] =
-            Project.Release(info.release, info.description ?: currentRelease.description, info.status ?: currentRelease.enabled, info.happened.toEpochSecond(UTC))
+            Project.Release(info.release, info.description ?: currentRelease.description, info.status ?: currentRelease.active, info.happened.toEpochSecond(UTC))
     }
 
     // Polling

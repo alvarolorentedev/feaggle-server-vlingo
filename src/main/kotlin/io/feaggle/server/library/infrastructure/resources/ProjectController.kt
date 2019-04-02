@@ -33,7 +33,7 @@ class ProjectController(private val world: World, private val journal: Journal<S
         get("/{projectName}/toggles")
             .param(String::class.java)
             .handle(this::allToggles).onError(this::onError),
-        put("/{projectName}/toggles/toggles/{releaseId}")
+        put("/{projectName}/toggles/{releaseId}")
             .param(String::class.java)
             .param(String::class.java)
             .body(UpdateToggleCommand::class.java)

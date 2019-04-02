@@ -16,6 +16,9 @@
  **/
 package io.feaggle.server.resources.domain.project
 
+import io.feaggle.server.resources.domain.declaration.Declaration
+import io.feaggle.server.resources.domain.declaration.DeclarationActor
+import io.vlingo.actors.Definition
 import io.vlingo.actors.Stage
 import io.vlingo.common.Completes
 import io.vlingo.lattice.model.DomainEvent
@@ -38,9 +41,20 @@ interface Project {
         val owners: List<ProjectOwnerDeclaration>
     )
 
-    data class ProjectDescriptionChanged(val id: ProjectId, val newDescription: String, val happened: LocalDateTime): DomainEvent(1)
-    data class ProjectOwnerRemoved(val id: ProjectId, val declaration: ProjectOwnerDeclaration, val happened: LocalDateTime): DomainEvent(1)
-    data class ProjectOwnerAdded(val id: ProjectId, val declaration: ProjectOwnerDeclaration, val happened: LocalDateTime): DomainEvent(1)
+    data class ProjectDescriptionChanged(val id: ProjectId, val newDescription: String, val happened: LocalDateTime) :
+        DomainEvent(1)
+
+    data class ProjectOwnerRemoved(
+        val id: ProjectId,
+        val declaration: ProjectOwnerDeclaration,
+        val happened: LocalDateTime
+    ) : DomainEvent(1)
+
+    data class ProjectOwnerAdded(
+        val id: ProjectId,
+        val declaration: ProjectOwnerDeclaration,
+        val happened: LocalDateTime
+    ) : DomainEvent(1)
 
     fun build(declaration: ProjectDeclaration)
 }
@@ -48,9 +62,13 @@ interface Project {
 object Projects {
     fun oneOf(stage: Stage, id: Project.ProjectId): Completes<Project> {
         val address = stage.world().addressFactory().from(id.hashCode().toString())
-        val actor = stage.maybeActorOf(Project::class.java, address)
-            .andThen { it.orElse(stage.actorFor(Project::class.java, ProjectActor::class.java, id)) }
-
-        return actor
+        return stage.actorOf(Project::class.java, address)
+            .andThen {
+                it ?: stage.actorFor<Project>(
+                    Project::class.java,
+                    Definition.has(ProjectActor::class.java, Definition.parameters(id)),
+                    address
+                )
+            }
     }
 }

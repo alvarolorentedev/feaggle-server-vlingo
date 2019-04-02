@@ -22,9 +22,12 @@ import io.restassured.RestAssured.given
 import org.testcontainers.containers.PostgreSQLContainer
 import java.lang.AssertionError
 import java.lang.Thread.sleep
+import java.util.concurrent.FutureTask
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 
 private const val EVENTUALLY_MAX_TIMES = 10
-private const val EVENTUALLY_SLEEP_TIME_MS = 500L
+private const val EVENTUALLY_SLEEP_TIME_MS = 1000L
 
 abstract class Specification {
     protected fun declare(nameOfDeclaration: String) {
@@ -44,10 +47,15 @@ abstract class Specification {
         var lastExcp: Throwable = RuntimeException()
 
         while (times < EVENTUALLY_MAX_TIMES) {
+            println("Trying ${times + 1 } of $EVENTUALLY_MAX_TIMES.")
+
             try {
-                f()
+                FutureTask(f).get(EVENTUALLY_SLEEP_TIME_MS, TimeUnit.MILLISECONDS)
                 return
             } catch (e: AssertionError) {
+                sleep(EVENTUALLY_SLEEP_TIME_MS)
+                lastExcp = e
+            } catch (e: TimeoutException) {
                 sleep(EVENTUALLY_SLEEP_TIME_MS)
                 lastExcp = e
             }
@@ -55,7 +63,7 @@ abstract class Specification {
         }
 
         val elapsed = System.currentTimeMillis() - initTime
-        print("Test failed after $times times. Total elapsed time: $elapsed ms")
+        println("Test failed after $times times. Total elapsed time: $elapsed ms")
         throw lastExcp
     }
 

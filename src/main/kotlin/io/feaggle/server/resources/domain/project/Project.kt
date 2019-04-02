@@ -1,14 +1,28 @@
+/**
+ * This file is part of feaggle-server.
+ *
+ * feaggle-server is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * feaggle-server is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with feaggle-server.  If not, see <https://www.gnu.org/licenses/>.
+ **/
 package io.feaggle.server.resources.domain.project
 
-import io.feaggle.server.resources.domain.declaration.Declaration
-import io.feaggle.server.resources.domain.declaration.DeclarationActor
 import io.vlingo.actors.Stage
 import io.vlingo.common.Completes
 import io.vlingo.lattice.model.DomainEvent
 import java.time.LocalDateTime
 
 interface Project {
-    data class ProjectId(val declaration: String, val boundary: String, val name: String)
+    data class ProjectId(val declaration: String, val name: String)
     data class ProjectOwner(val name: String, val email: String)
     data class ProjectInformation(val description: String, val owners: List<ProjectOwner>)
 
@@ -19,7 +33,6 @@ interface Project {
 
     data class ProjectDeclaration(
         val declaration: String,
-        val boundary: String,
         val name: String,
         val description: String,
         val owners: List<ProjectOwnerDeclaration>

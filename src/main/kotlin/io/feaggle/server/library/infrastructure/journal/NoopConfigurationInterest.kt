@@ -14,19 +14,22 @@
  * You should have received a copy of the GNU General Public License
  * along with feaggle-server.  If not, see <https://www.gnu.org/licenses/>.
  **/
-package io.feaggle.server.specs.toggles
+package io.feaggle.server.library.infrastructure.journal
 
-import io.feaggle.server.specs.Specification
-import io.restassured.RestAssured.given
-import org.junit.jupiter.api.Test
-import java.util.*
+import io.vlingo.symbio.store.common.jdbc.Configuration
+import java.sql.Connection
 
-class ReleaseToggleTest: Specification() {
-    @Test
-    internal fun queryRelease_IfDoesNotExist_Returns404() {
-        val releaseId = UUID.randomUUID().toString()
+class NoopConfigurationInterest: Configuration.ConfigurationInterest {
+    override fun afterConnect(connection: Connection?) {
 
-        given().get("/release/$releaseId").then()
-            .statusCode(404)
+    }
+
+    override fun beforeConnect(configuration: Configuration?) {
+    }
+
+    override fun dropDatabase(connection: Connection?, databaseName: String?) {
+    }
+
+    override fun createDatabase(connection: Connection?, databaseName: String?) {
     }
 }

@@ -14,19 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with feaggle-server.  If not, see <https://www.gnu.org/licenses/>.
  **/
-package io.feaggle.server.specs.toggles
+package io.feaggle.server.library.infrastructure.http
 
-import io.feaggle.server.specs.Specification
-import io.restassured.RestAssured.given
-import org.junit.jupiter.api.Test
-import java.util.*
+import io.vlingo.http.Response
+import io.vlingo.http.ResponseHeader
+import io.vlingo.http.resource.serialization.JsonSerialization.serialized
 
-class ReleaseToggleTest: Specification() {
-    @Test
-    internal fun queryRelease_IfDoesNotExist_Returns404() {
-        val releaseId = UUID.randomUUID().toString()
+fun answerJson(status: Response.Status, content: Any): Response {
+    return Response.of(status, serialized(content))
+        .include(ResponseHeader.contentType("application/json"))
+}
 
-        given().get("/release/$releaseId").then()
-            .statusCode(404)
-    }
+fun answerJson(status: Response.Status): Response {
+    return Response.of(status)
+        .include(ResponseHeader.contentType("application/json"))
 }

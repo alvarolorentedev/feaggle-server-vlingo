@@ -1,7 +1,23 @@
+/**
+ * This file is part of feaggle-server.
+ *
+ * feaggle-server is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * feaggle-server is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with feaggle-server.  If not, see <https://www.gnu.org/licenses/>.
+ **/
 package io.feaggle.server.resources.domain.project
 
-import io.feaggle.server.infrastructure.journal.register
-import io.feaggle.server.infrastructure.journal.withConsumer
+import io.feaggle.server.library.infrastructure.journal.register
+import io.feaggle.server.library.infrastructure.journal.withConsumer
 import io.vlingo.lattice.model.DomainEvent
 import io.vlingo.lattice.model.sourcing.EventSourced
 import io.vlingo.lattice.model.sourcing.SourcedTypeRegistry
@@ -15,7 +31,7 @@ class ProjectActor(
 ): EventSourced(), Project {
     constructor(id: Project.ProjectId): this(id, Project.ProjectInformation("", emptyList()))
 
-    override fun streamName() = "/declaration/${id.declaration}/boundary/${id.boundary}/project/${id.name}"
+    override fun streamName() = "/declaration/${id.declaration}/project/${id.name}"
 
     // Commands
     override fun build(declaration: Project.ProjectDeclaration) {

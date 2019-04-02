@@ -1,14 +1,29 @@
+/**
+ * This file is part of feaggle-server.
+ *
+ * feaggle-server is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * feaggle-server is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with feaggle-server.  If not, see <https://www.gnu.org/licenses/>.
+ **/
 package io.feaggle.server
 
-import io.feaggle.server.domain.library.bootstrapLibraryConsumers
-import io.feaggle.server.infrastructure.journal.NoopConfigurationInterest
-import io.feaggle.server.infrastructure.journal.NoopJournalListener
-import io.feaggle.server.infrastructure.resources.ReleaseToggleController
-import io.feaggle.server.resources.domain.boundary.bootstrapBoundaryActorConsumers
+import io.feaggle.server.library.domain.project.bootstrapLibraryConsumers
+import io.feaggle.server.library.infrastructure.journal.NoopConfigurationInterest
+import io.feaggle.server.library.infrastructure.journal.NoopJournalListener
+import io.feaggle.server.library.infrastructure.resources.ProjectController
 import io.feaggle.server.resources.domain.declaration.bootstrapDeclarationActorConsumers
 import io.feaggle.server.resources.domain.project.bootstrapResourceProjectActorConsumers
 import io.feaggle.server.resources.domain.release.bootstrapReleaseActorConsumers
-import io.feaggle.server.resources.infrastructure.declaration.DeclarationController
+import io.feaggle.server.resources.infrastructure.DeclarationController
 import io.vlingo.actors.World
 import io.vlingo.http.resource.Resources
 import io.vlingo.http.resource.Server
@@ -72,7 +87,6 @@ class ApplicationServer(
     private fun initJournalConsumers() {
         bootstrapLibraryConsumers(registry, journal)
         bootstrapResourceProjectActorConsumers(registry, journal)
-        bootstrapBoundaryActorConsumers(registry, journal)
         bootstrapReleaseActorConsumers(registry, journal)
         bootstrapDeclarationActorConsumers(registry, journal)
     }
@@ -83,7 +97,7 @@ class ApplicationServer(
 
     private fun initServer() {
         val resources = Resources.are(
-            ReleaseToggleController(world, journal).asResource(10),
+            ProjectController(world, journal).asResource(10),
             DeclarationController(world).asResource(10)
         )
 

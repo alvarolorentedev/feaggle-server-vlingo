@@ -1,3 +1,19 @@
+/**
+ * This file is part of feaggle-server.
+ *
+ * feaggle-server is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * feaggle-server is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with feaggle-server.  If not, see <https://www.gnu.org/licenses/>.
+ **/
 package io.feaggle.server.resources.domain.declaration
 
 import io.feaggle.server.base.UnitTest
@@ -16,29 +32,9 @@ class DeclarationTest: UnitTest() {
     }
 
     @Test
-    internal fun shouldDetectNewBoundaries() {
-        waitForEvents(2)
-
-        declaration.build(
-            """
-                declaration:
-                    version: 0.0.1
-                    resources:
-                        my-boundary:
-                            is-a: boundary
-                            description: My first boundary!
-            """.trimIndent()
-        )
-
-        val events = appliedEvents()
-        assertTrue(events.any { it.type.endsWith("DeclarationResourceFound") })
-        assertTrue(events.any { it.type.endsWith("BoundaryDescriptionChanged") })
-    }
-
-    @Test
     internal fun shouldDetectDroppedResources() {
         declaration = world().actorFor(
-            Declaration::class.java, DeclarationActor::class.java, Declaration.DeclarationId("declaration"), setOf<String>("my-boundary")
+            Declaration::class.java, DeclarationActor::class.java, Declaration.DeclarationId("declaration"), setOf("my-boundary")
         )
 
         waitForEvents(1)
@@ -57,19 +53,15 @@ class DeclarationTest: UnitTest() {
 
     @Test
     internal fun shouldDetectNewProjects() {
-        waitForEvents(6)
+        waitForEvents(3)
 
         declaration.build(
             """
                 declaration:
                     version: 0.0.1
                     resources:
-                        my-boundary:
-                            is-a: boundary
-                            description: My first boundary!
                         my-project:
                             is-a: project
-                            in-boundary: my-boundary
                             description: My first project!
                             owners:
                                 - name: John
@@ -87,19 +79,15 @@ class DeclarationTest: UnitTest() {
 
     @Test
     internal fun shouldDetectNewReleases() {
-        waitForEvents(9)
+        waitForEvents(7)
 
         declaration.build(
             """
                 declaration:
                     version: 0.0.1
                     resources:
-                        my-boundary:
-                            is-a: boundary
-                            description: My first boundary!
                         my-project:
                             is-a: project
-                            in-boundary: my-boundary
                             description: My first project!
                             owners:
                                 - name: John
@@ -108,7 +96,6 @@ class DeclarationTest: UnitTest() {
                                   email: bob-email@feaggle.com
                         my-release:
                             is-a: release
-                            in-boundary: my-boundary
                             in-project: my-project
                             description: My first release!
                             enabled: true

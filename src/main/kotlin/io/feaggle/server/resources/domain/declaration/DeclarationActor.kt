@@ -1,11 +1,25 @@
+/**
+ * This file is part of feaggle-server.
+ *
+ * feaggle-server is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * feaggle-server is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with feaggle-server.  If not, see <https://www.gnu.org/licenses/>.
+ **/
 package io.feaggle.server.resources.domain.declaration
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
-import io.feaggle.server.infrastructure.journal.register
-import io.feaggle.server.infrastructure.journal.withConsumer
-import io.feaggle.server.resources.domain.boundary.Boundaries
-import io.feaggle.server.resources.domain.boundary.Boundary
+import io.feaggle.server.library.infrastructure.journal.register
+import io.feaggle.server.library.infrastructure.journal.withConsumer
 import io.feaggle.server.resources.domain.project.Project
 import io.feaggle.server.resources.domain.project.Projects
 import io.feaggle.server.resources.domain.release.Release
@@ -47,24 +61,14 @@ class DeclarationActor(
             val value = it.value
 
             when (value["is-a"].asText()) {
-                "boundary" -> {
-                    val boundaryId = Boundary.BoundaryId(id.name, name)
-                    val boundaryDeclaration = Boundary.BoundaryDeclaration(id.name, name, value["description"].asText())
-
-                    Boundaries.oneOf(stage(), boundaryId)
-                        .andThenConsume { it.build(boundaryDeclaration) }
-                }
-
                 "project" -> {
-                    val boundaryId = value["in-boundary"].asText()
-                    val projectId = Project.ProjectId(id.name, boundaryId, name)
+                    val projectId = Project.ProjectId(id.name, name)
                     val ownerDeclarations = value["owners"].map {
                         Project.ProjectOwnerDeclaration(it["name"].asText(), it["email"].asText())
                     }
 
                     val projectDeclaration = Project.ProjectDeclaration(
                         id.name,
-                        boundaryId,
                         name,
                         value["description"].asText(),
                         ownerDeclarations
@@ -75,14 +79,13 @@ class DeclarationActor(
                 }
 
                 "release" -> {
-                    val boundaryId = value["in-boundary"].asText()
                     val projectId = value["in-project"].asText()
                     val description = value["description"].asText()
                     val enabled = value["enabled"].asBoolean()
-                    val releaseId = Release.ReleaseId(id.name, boundaryId, projectId, name)
+                    val releaseId = Release.ReleaseId(id.name,  projectId, name)
 
                     val releaseDeclaration =
-                        Release.ReleaseDeclaration(id.name, boundaryId, projectId, name, description, enabled)
+                        Release.ReleaseDeclaration(id.name,  projectId, name, description, enabled)
 
                     Releases.oneOf(stage(), releaseId)
                         .andThenConsume { it.build(releaseDeclaration) }

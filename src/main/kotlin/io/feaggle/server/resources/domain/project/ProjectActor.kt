@@ -1,7 +1,7 @@
 package io.feaggle.server.resources.domain.project
 
-import io.feaggle.server.infrastructure.journal.register
-import io.feaggle.server.infrastructure.journal.withConsumer
+import io.feaggle.server.library.infrastructure.journal.register
+import io.feaggle.server.library.infrastructure.journal.withConsumer
 import io.vlingo.lattice.model.DomainEvent
 import io.vlingo.lattice.model.sourcing.EventSourced
 import io.vlingo.lattice.model.sourcing.SourcedTypeRegistry

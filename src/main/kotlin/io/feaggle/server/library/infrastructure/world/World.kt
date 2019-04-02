@@ -1,4 +1,4 @@
-package io.feaggle.server.infrastructure.world
+package io.feaggle.server.library.infrastructure.world
 
 import io.vlingo.actors.Address
 import io.vlingo.actors.World

@@ -2,8 +2,8 @@ package io.feaggle.server.resources.domain.declaration
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
-import io.feaggle.server.infrastructure.journal.register
-import io.feaggle.server.infrastructure.journal.withConsumer
+import io.feaggle.server.library.infrastructure.journal.register
+import io.feaggle.server.library.infrastructure.journal.withConsumer
 import io.feaggle.server.resources.domain.project.Project
 import io.feaggle.server.resources.domain.project.Projects
 import io.feaggle.server.resources.domain.release.Release

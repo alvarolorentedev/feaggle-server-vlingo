@@ -1,4 +1,4 @@
-package io.feaggle.server.infrastructure.journal
+package io.feaggle.server.library.infrastructure.journal
 
 import io.vlingo.symbio.Entry
 import io.vlingo.symbio.State

@@ -1,4 +1,4 @@
-package io.feaggle.server.infrastructure.journal
+package io.feaggle.server.library.infrastructure.journal
 
 import io.vlingo.common.serialization.JsonSerialization
 import io.vlingo.lattice.model.DomainEvent

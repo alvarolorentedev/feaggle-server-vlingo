@@ -1,8 +1,8 @@
-package io.feaggle.server.domain.library
+package io.feaggle.server.library.domain.project
 
 import com.google.gson.Gson
-import io.feaggle.server.infrastructure.journal.register
-import io.feaggle.server.infrastructure.journal.withConsumer
+import io.feaggle.server.library.infrastructure.journal.register
+import io.feaggle.server.library.infrastructure.journal.withConsumer
 import io.feaggle.server.resources.domain.release.Release
 import io.vlingo.common.Completes
 import io.vlingo.common.Scheduled
@@ -15,48 +15,48 @@ import java.time.ZoneOffset.UTC
 private const val maximumEntries: Int = 100
 private const val pollingInterval: Long = 100
 
-class LibraryActor(journal: Journal<String>) : EventSourced(), Library, Scheduled<Any> {
+class ProjectActor(journal: Journal<String>) : EventSourced(), Project, Scheduled<Any> {
     private val gson = Gson()
-    private val releases = emptyMap<String, Library.SingleRelease>().toMutableMap()
-    private val reader: JournalReader<String> = journal.journalReader("library").await()
+    private val releases = emptyMap<String, Project.Release>().toMutableMap()
+    private val reader: JournalReader<String> = journal.journalReader("project").await()
 
     init {
         scheduler().schedule(selfAs(Scheduled::class.java) as Scheduled<Any>, null, 0, pollingInterval)
     }
 
-    override fun streamName() = "library"
+    override fun streamName() = "project"
 
     // Queries
-    override fun releases(): Completes<List<Library.SingleRelease>> {
-        logger().log("Library received query releases()")
+    override fun toggles(): Completes<Project.Toggles> {
+        logger().log("Project received query toggles()")
 
-        return completes<List<Library.SingleRelease>>().with(releases.values.toList())
+        return completes<Project.Toggles>().with(Project.Toggles(releases.values.toList()))
     }
 
     // Events
-    fun whenReleaseInfoChanged(info: Library.ReleaseInfoChanged) {
-        logger().log("Library received event $info")
+    fun whenReleaseInfoChanged(info: Project.ReleaseInfoChanged) {
+        logger().log("Project received event $info")
 
-        val currentRelease = releases.getOrDefault(info.release, Library.SingleRelease(info.release, "", false, 0L))
+        val currentRelease = releases.getOrDefault(info.release, Project.Release(info.release, "", false, 0L))
         releases[info.release] =
-            Library.SingleRelease(info.release, info.description ?: currentRelease.description, info.status ?: currentRelease.enabled, info.happened.toEpochSecond(UTC))
+            Project.Release(info.release, info.description ?: currentRelease.description, info.status ?: currentRelease.enabled, info.happened.toEpochSecond(UTC))
     }
 
     // Polling
     override fun intervalSignal(scheduled: Scheduled<Any>?, data: Any?) {
         reader.readNext(maximumEntries).andThenConsume { stream ->
             stream.forEach { event ->
-                logger().log("Library polled event ${event.type}\n\twith data ${event.entryData}")
+                logger().log("Project polled event ${event.type}\n\twith data ${event.entryData}")
 
                 if (event.type.endsWith("ReleaseDescriptionChanged")) {
                     val changed = gson.fromJson(event.entryData, Release.ReleaseDescriptionChanged::class.java)
-                    apply(Library.ReleaseInfoChanged(changed.id.toPublicIdentifier(), changed.newDescription, null, changed.happened))
+                    apply(Project.ReleaseInfoChanged(changed.id.toPublicIdentifier(), changed.newDescription, null, changed.happened))
                 }
 
                 if (event.type.endsWith("ReleaseStatusChanged")) {
                     val changed = gson.fromJson(event.entryData, Release.ReleaseStatusChanged::class.java)
                     apply(
-                        Library.ReleaseInfoChanged(
+                        Project.ReleaseInfoChanged(
                             changed.id.toPublicIdentifier(),
                             null,
                             changed.newStatus,
@@ -71,6 +71,6 @@ class LibraryActor(journal: Journal<String>) : EventSourced(), Library, Schedule
 
 
 fun bootstrapLibraryConsumers(registry: SourcedTypeRegistry, journal: Journal<String>) {
-    registry.register<LibraryActor>(journal)
-        .withConsumer(LibraryActor::whenReleaseInfoChanged)
+    registry.register<ProjectActor>(journal)
+        .withConsumer(ProjectActor::whenReleaseInfoChanged)
 }

@@ -1,9 +1,9 @@
 package io.feaggle.server
 
-import io.feaggle.server.domain.library.bootstrapLibraryConsumers
-import io.feaggle.server.infrastructure.journal.NoopConfigurationInterest
-import io.feaggle.server.infrastructure.journal.NoopJournalListener
-import io.feaggle.server.infrastructure.resources.ReleaseToggleController
+import io.feaggle.server.library.domain.project.bootstrapLibraryConsumers
+import io.feaggle.server.library.infrastructure.journal.NoopConfigurationInterest
+import io.feaggle.server.library.infrastructure.journal.NoopJournalListener
+import io.feaggle.server.library.infrastructure.resources.ProjectController
 import io.feaggle.server.resources.domain.declaration.bootstrapDeclarationActorConsumers
 import io.feaggle.server.resources.domain.project.bootstrapResourceProjectActorConsumers
 import io.feaggle.server.resources.domain.release.bootstrapReleaseActorConsumers
@@ -81,7 +81,7 @@ class ApplicationServer(
 
     private fun initServer() {
         val resources = Resources.are(
-            ReleaseToggleController(world, journal).asResource(10),
+            ProjectController(world, journal).asResource(10),
             DeclarationController(world).asResource(10)
         )
 

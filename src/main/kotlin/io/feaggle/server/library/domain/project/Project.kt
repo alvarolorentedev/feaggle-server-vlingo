@@ -1,4 +1,4 @@
-package io.feaggle.server.domain.library
+package io.feaggle.server.library.domain.project
 
 import io.vlingo.actors.Definition
 import io.vlingo.actors.World
@@ -6,10 +6,9 @@ import io.vlingo.common.Completes
 import io.vlingo.lattice.model.DomainEvent
 import io.vlingo.symbio.store.journal.Journal
 import java.time.LocalDateTime
-import java.util.*
 
-interface Library {
-    data class SingleRelease(val name: String, val description: String, val enabled: Boolean, val lastChange: Long)
+interface Project {
+    data class Release(val name: String, val description: String, val enabled: Boolean, val lastChange: Long)
     data class ReleaseInfoChanged(
         val release: String,
         val description: String?,
@@ -17,21 +16,22 @@ interface Library {
         val happened: LocalDateTime
     ): DomainEvent(1)
 
-    fun releases(): Completes<List<SingleRelease>>
+    data class Toggles(val releases: List<Release>)
+    fun toggles(): Completes<Toggles>
 }
 
 private const val addressId = "0"
 
-fun World.library(journal: Journal<String>): Completes<Library> {
-    return stage().actorOf(Library::class.java, addressFactory().from(addressId))
+fun World.project(journal: Journal<String>): Completes<Project> {
+    return stage().actorOf(Project::class.java, addressFactory().from(addressId))
         .andThen { it ?: instantiate(journal) }
 }
 
-private fun World.instantiate(journal: Journal<String>): Library {
+private fun World.instantiate(journal: Journal<String>): Project {
     return stage().actorFor(
-        Library::class.java,
+        Project::class.java,
         Definition.has(
-            LibraryActor::class.java,
+            ProjectActor::class.java,
             Definition.parameters(journal)
         ),
         addressFactory().from(addressId)

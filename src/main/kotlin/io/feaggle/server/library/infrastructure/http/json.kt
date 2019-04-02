@@ -1,4 +1,4 @@
-package io.feaggle.server.infrastructure.http
+package io.feaggle.server.library.infrastructure.http
 
 import io.vlingo.http.Response
 import io.vlingo.http.ResponseHeader

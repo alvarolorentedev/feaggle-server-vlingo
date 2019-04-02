@@ -31,7 +31,7 @@ class ProjectActor(
 ) : EventSourced(), Project {
     constructor(id: Project.ProjectId) : this(id, Project.ProjectInformation("", emptyList()))
 
-    override fun streamName() = "/declaration/${id.declaration}/project/${id.name}"
+    override fun streamName() = "/project/${id.name}"
 
     // Commands
     override fun build(declaration: Project.ProjectDeclaration) {

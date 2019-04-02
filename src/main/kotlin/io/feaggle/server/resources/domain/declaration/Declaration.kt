@@ -16,6 +16,10 @@
  **/
 package io.feaggle.server.resources.domain.declaration
 
+import io.feaggle.server.library.infrastructure.world.actor
+import io.feaggle.server.library.infrastructure.world.addressOfString
+import io.feaggle.server.resources.domain.release.Release
+import io.feaggle.server.resources.domain.release.ReleaseActor
 import io.vlingo.actors.Definition
 import io.vlingo.actors.Stage
 import io.vlingo.common.Completes
@@ -23,7 +27,9 @@ import io.vlingo.lattice.model.DomainEvent
 import java.time.LocalDateTime
 
 interface Declaration {
-    data class DeclarationId(val name: String)
+    data class DeclarationId(val name: String) {
+        fun toAddress() = "/declaration/$name"
+    }
 
     data class DeclarationResourceFound(val id: DeclarationId, val resource: String, val happened: LocalDateTime) :
         DomainEvent(1)
@@ -36,14 +42,7 @@ interface Declaration {
 
 object Declarations {
     fun oneOf(stage: Stage, id: Declaration.DeclarationId): Completes<Declaration> {
-        val address = stage.world().addressFactory().from(id.hashCode().toString())
-        return stage.actorOf(Declaration::class.java, address)
-            .andThen {
-                it ?: stage.actorFor<Declaration>(
-                    Declaration::class.java,
-                    Definition.has(DeclarationActor::class.java, Definition.parameters(id)),
-                    address
-                )
-            }
+        val address = stage.world().addressOfString(id.toAddress())
+        return stage.world().actor<Declaration, DeclarationActor>(arrayOf(id), address)
     }
 }

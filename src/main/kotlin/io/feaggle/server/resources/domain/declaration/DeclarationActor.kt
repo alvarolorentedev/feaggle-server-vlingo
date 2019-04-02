@@ -62,7 +62,7 @@ class DeclarationActor(
 
             when (value["is-a"].asText()) {
                 "project" -> {
-                    val projectId = Project.ProjectId(id.name, name)
+                    val projectId = Project.ProjectId(id.name)
                     val ownerDeclarations = value["owners"].map {
                         Project.ProjectOwnerDeclaration(it["name"].asText(), it["email"].asText())
                     }
@@ -81,11 +81,11 @@ class DeclarationActor(
                 "release" -> {
                     val projectId = value["in-project"].asText()
                     val description = value["description"].asText()
-                    val enabled = value["active"].asBoolean()
-                    val releaseId = Release.ReleaseId(id.name,  projectId, name)
+                    val active = value["active"].asBoolean()
+                    val releaseId = Release.ReleaseId(projectId, name)
 
                     val releaseDeclaration =
-                        Release.ReleaseDeclaration(id.name,  projectId, name, description, enabled)
+                        Release.ReleaseDeclaration(id.name, projectId, name, description, active)
 
                     Releases.oneOf(stage(), releaseId)
                         .andThenConsume { it.build(releaseDeclaration) }

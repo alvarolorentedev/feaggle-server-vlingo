@@ -16,7 +16,7 @@
  **/
 package io.feaggle.server
 
-import io.feaggle.server.library.domain.project.bootstrapLibraryConsumers
+import io.feaggle.server.library.domain.library.bootstrapLibraryConsumers
 import io.feaggle.server.library.infrastructure.journal.NoopConfigurationInterest
 import io.feaggle.server.library.infrastructure.journal.NoopJournalListener
 import io.feaggle.server.library.infrastructure.resources.ProjectController

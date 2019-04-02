@@ -30,7 +30,7 @@ class ReleaseActor(
 ): EventSourced(), Release {
     constructor(id: Release.ReleaseId): this(id, Release.ReleaseInformation(""), Release.ReleaseStatus(false))
 
-    override fun streamName() = "/declaration/${id.declaration}/project/${id.project}/${id.name}"
+    override fun streamName() = "/project/${id.project}/${id.name}"
 
     // Command
     override fun build(releaseDeclaration: Release.ReleaseDeclaration) {
@@ -38,8 +38,14 @@ class ReleaseActor(
             apply(Release.ReleaseDescriptionChanged(id, releaseDeclaration.description, LocalDateTime.now()))
         }
 
-        if (status.enabled != releaseDeclaration.active) {
+        if (status.active != releaseDeclaration.active) {
             apply(Release.ReleaseStatusChanged(id, releaseDeclaration.active, LocalDateTime.now()))
+        }
+    }
+
+    override fun release(active: Boolean) {
+        if (status.active != active) {
+            apply(Release.ReleaseStatusChanged(id, active, LocalDateTime.now()))
         }
     }
 
@@ -49,7 +55,7 @@ class ReleaseActor(
     }
 
     fun whenStatusChanged(event: Release.ReleaseStatusChanged) {
-        status = status.copy(enabled = event.newStatus)
+        status = status.copy(active = event.newStatus)
     }
 }
 

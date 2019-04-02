@@ -14,40 +14,36 @@
  * You should have received a copy of the GNU General Public License
  * along with feaggle-server.  If not, see <https://www.gnu.org/licenses/>.
  **/
-package io.feaggle.server.library.domain.project
+package io.feaggle.server.library.domain.library
 
+import io.feaggle.server.library.infrastructure.world.actor
+import io.feaggle.server.library.infrastructure.world.addressOfString
+import io.feaggle.server.resources.domain.release.Release
+import io.feaggle.server.resources.domain.release.ReleaseActor
 import io.vlingo.actors.Definition
-import io.vlingo.actors.World
+import io.vlingo.actors.Stage
 import io.vlingo.common.Completes
 import io.vlingo.lattice.model.DomainEvent
 import io.vlingo.symbio.store.journal.Journal
 import java.time.LocalDateTime
 
-interface Project {
+interface Library {
     data class Release(val name: String, val description: String, val active: Boolean, val lastChange: Long)
     data class ReleaseInfoChanged(
         val release: String,
         val description: String?,
         val status: Boolean?,
         val happened: LocalDateTime
-    ): DomainEvent(1)
+    ) : DomainEvent(1)
 
     data class Toggles(val releases: List<Release>)
+
     fun toggles(): Completes<Toggles>
 }
 
-fun World.project(projectId: String, journal: Journal<String>): Completes<Project> {
-    return stage().actorOf(Project::class.java, addressFactory().from(projectId.hashCode().toString()))
-        .andThen { it ?: instantiate(projectId, journal) }
-}
-
-private fun World.instantiate(projectId: String, journal: Journal<String>): Project {
-    return stage().actorFor(
-        Project::class.java,
-        Definition.has(
-            ProjectActor::class.java,
-            Definition.parameters(projectId, journal)
-        ),
-        addressFactory().from(projectId.hashCode().toString())
-    )
+object Libraries {
+    fun oneOf(stage: Stage, libraryId: String, journal: Journal<String>): Completes<Library> {
+        val address = stage.world().addressOfString(libraryId)
+        return stage.world().actor<Library, LibraryActor>(arrayOf(libraryId, journal), address)
+    }
 }

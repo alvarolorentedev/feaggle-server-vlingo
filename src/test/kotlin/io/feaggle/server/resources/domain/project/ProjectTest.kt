@@ -27,7 +27,7 @@ class ProjectTest : UnitTest() {
     @BeforeEach
     internal fun setUp() {
         project = world().actorFor(Project::class.java, ProjectActor::class.java,
-            Project.ProjectId("declaration", "project"),
+            Project.ProjectId("project"),
             Project.ProjectInformation(
                 "..", listOf(
                     Project.ProjectOwner("A", "A@a.com")

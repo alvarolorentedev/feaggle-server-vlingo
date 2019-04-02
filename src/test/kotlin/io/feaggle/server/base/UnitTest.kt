@@ -34,7 +34,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import java.util.*
 
-private const val DEFAULT_TIMEOUT: Long = 5000
+private const val DEFAULT_TIMEOUT: Long = 50000
 
 abstract class UnitTest: JournalListener<String> {
     private val logger = FluentLogger.forEnclosingClass()

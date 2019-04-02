@@ -19,12 +19,37 @@ package io.feaggle.server.specs
 import io.feaggle.server.base.Specification
 import io.restassured.RestAssured.given
 import org.hamcrest.CoreMatchers.equalTo
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class ReleaseQueryTest: Specification() {
-    @Test
-    internal fun queryAllReleases_findReleaseName() {
+
+    @BeforeEach
+    internal fun setUp() {
         declare("release-query-declaration")
+    }
+
+    @Test
+    internal fun queryAllReleases_findReleaseInfo() {
+        eventually {
+            given()
+                .get("/my-project/toggles")
+            .then()
+                .statusCode(200)
+                .body("releases[0].name", equalTo("my-release"))
+                .body("releases[0].active", equalTo(true))
+        }
+    }
+
+    @Test
+    internal fun putReleaseActive_shouldUpdateReleaseStatus() {
+        eventually {
+            given()
+                .body("""{ "active": false }""")
+                .put("/my-project/toggles/releases/my-release")
+            .then()
+                .statusCode(200)
+        }
 
         eventually {
             given()
@@ -32,7 +57,7 @@ class ReleaseQueryTest: Specification() {
                 .then()
                 .statusCode(200)
                 .body("releases[0].name", equalTo("my-release"))
-                .body("releases[0].active", equalTo(true))
+                .body("releases[0].active", equalTo(false))
         }
     }
 }

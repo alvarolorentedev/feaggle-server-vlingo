@@ -16,8 +16,10 @@
  **/
 package io.feaggle.server.library.infrastructure.resources
 
-import io.feaggle.server.library.domain.project.project
+import io.feaggle.server.library.domain.library.Libraries
 import io.feaggle.server.library.infrastructure.http.answerJson
+import io.feaggle.server.resources.domain.release.Release
+import io.feaggle.server.resources.domain.release.Releases
 import io.vlingo.actors.World
 import io.vlingo.common.Completes
 import io.vlingo.http.Response
@@ -33,7 +35,7 @@ class ProjectController(private val world: World, private val journal: Journal<S
         get("/{projectName}/toggles")
             .param(String::class.java)
             .handle(this::allToggles).onError(this::onError),
-        put("/{projectName}/toggles/{releaseId}")
+        put("/{projectName}/toggles/releases/{releaseId}")
             .param(String::class.java)
             .param(String::class.java)
             .body(UpdateToggleCommand::class.java)
@@ -42,7 +44,7 @@ class ProjectController(private val world: World, private val journal: Journal<S
     private fun allToggles(projectId: String): Completes<Response> {
         logger.log("Received HTTP request GET /toggles")
 
-        return world.project(projectId, journal)
+        return Libraries.oneOf(world.stage(), projectId, journal)
             .andThenTo { it.toggles() }
             .andThen {
                 answerJson(Response.Status.Ok, it)
@@ -50,7 +52,9 @@ class ProjectController(private val world: World, private val journal: Journal<S
     }
 
     private fun updateRelease(projectId: String, releaseId: String, command: UpdateToggleCommand): Completes<Response> {
-        return Completes.withSuccess(answerJson(Response.Status.Ok))
+        return Releases.oneOf(world.stage(), Release.ReleaseId(projectId, releaseId))
+            .andThen { it.release(command.active) }
+            .andThen { answerJson(Response.Status.Ok) }
     }
 
     private fun onError(t: Throwable): Completes<Response> {

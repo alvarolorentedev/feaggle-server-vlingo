@@ -23,7 +23,7 @@ import java.time.LocalDateTime
 
 interface Release {
     data class ReleaseId(val declaration: String, val project: String, val name: String) {
-        fun toPublicIdentifier() = "$declaration/$project/$name"
+        fun toPublicIdentifier() = name
     }
 
     data class ReleaseInformation(val description: String)

@@ -14,19 +14,26 @@
  * You should have received a copy of the GNU General Public License
  * along with feaggle-server.  If not, see <https://www.gnu.org/licenses/>.
  **/
-package io.feaggle.server.specs.toggles
+package io.feaggle.server.specs
 
-import io.feaggle.server.specs.Specification
-import io.restassured.RestAssured.given
+import io.feaggle.server.base.Specification
+import io.restassured.RestAssured.*
+import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.Matchers.lessThan
 import org.junit.jupiter.api.Test
-import java.util.*
 
-class ReleaseToggleTest: Specification() {
+class ReleaseQueryTest: Specification() {
     @Test
-    internal fun queryRelease_IfDoesNotExist_Returns404() {
-        val releaseId = UUID.randomUUID().toString()
+    internal fun queryAllReleases_findReleaseName() {
+        declare("release-query-declaration")
 
-        given().get("/release/$releaseId").then()
-            .statusCode(404)
+        eventually {
+            given()
+                .get("/my-project/toggles")
+                .then()
+                .time(lessThan(5000L))
+                .statusCode(200)
+                .body("releases[0].name", equalTo("my-release"))
+        }
     }
 }

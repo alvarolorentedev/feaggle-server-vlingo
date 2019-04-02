@@ -36,20 +36,18 @@ interface Project {
     fun toggles(): Completes<Toggles>
 }
 
-private const val addressId = "0"
-
-fun World.project(journal: Journal<String>): Completes<Project> {
-    return stage().actorOf(Project::class.java, addressFactory().from(addressId))
-        .andThen { it ?: instantiate(journal) }
+fun World.project(projectId: String, journal: Journal<String>): Completes<Project> {
+    return stage().actorOf(Project::class.java, addressFactory().from(projectId.hashCode().toString()))
+        .andThen { it ?: instantiate(projectId, journal) }
 }
 
-private fun World.instantiate(journal: Journal<String>): Project {
+private fun World.instantiate(projectId: String, journal: Journal<String>): Project {
     return stage().actorFor(
         Project::class.java,
         Definition.has(
             ProjectActor::class.java,
-            Definition.parameters(journal)
+            Definition.parameters(projectId, journal)
         ),
-        addressFactory().from(addressId)
+        addressFactory().from(projectId.hashCode().toString())
     )
 }

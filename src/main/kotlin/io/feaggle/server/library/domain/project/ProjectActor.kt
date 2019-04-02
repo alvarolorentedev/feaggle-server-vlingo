@@ -31,16 +31,16 @@ import java.time.ZoneOffset.UTC
 private const val maximumEntries: Int = 100
 private const val pollingInterval: Long = 100
 
-class ProjectActor(journal: Journal<String>) : EventSourced(), Project, Scheduled<Any> {
+class ProjectActor(val projectId: String, journal: Journal<String>) : EventSourced(), Project, Scheduled<Any> {
     private val gson = Gson()
     private val releases = emptyMap<String, Project.Release>().toMutableMap()
-    private val reader: JournalReader<String> = journal.journalReader("project").await()
+    private val reader: JournalReader<String> = journal.journalReader("project-$projectId").await()
 
     init {
         scheduler().schedule(selfAs(Scheduled::class.java) as Scheduled<Any>, null, 0, pollingInterval)
     }
 
-    override fun streamName() = "project"
+    override fun streamName() = "project-$projectId"
 
     // Queries
     override fun toggles(): Completes<Project.Toggles> {

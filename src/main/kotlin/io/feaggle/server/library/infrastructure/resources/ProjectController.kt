@@ -24,26 +24,25 @@ import io.vlingo.http.Response
 import io.vlingo.http.resource.ResourceBuilder.*
 import io.vlingo.symbio.store.journal.Journal
 
-private data class UpdateToggleCommand(val active: Boolean)
-
 class ProjectController(private val world: World, private val journal: Journal<String>) {
+    private data class UpdateToggleCommand(val active: Boolean)
     private val logger = world.defaultLogger()
 
     fun asResource(poolSize: Int) = resource(
         "project", poolSize,
         get("/{projectName}/toggles")
             .param(String::class.java)
-            .handle(this::allReleases).onError(this::onError),
+            .handle(this::allToggles).onError(this::onError),
         put("/{projectName}/toggles/toggles/{releaseId}")
             .param(String::class.java)
             .param(String::class.java)
             .body(UpdateToggleCommand::class.java)
             .handle(this::updateRelease).onError(this::onError))
 
-    private fun allReleases(projectId: String): Completes<Response> {
+    private fun allToggles(projectId: String): Completes<Response> {
         logger.log("Received HTTP request GET /toggles")
 
-        return world.project(journal)
+        return world.project(projectId, journal)
             .andThenTo { it.toggles() }
             .andThen {
                 answerJson(Response.Status.Ok, it)

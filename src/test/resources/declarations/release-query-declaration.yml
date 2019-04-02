@@ -1,0 +1,16 @@
+declaration:
+  version: 0.0.1
+  resources:
+    my-project:
+      is-a: project
+      description: My first project!
+      owners:
+        - name: John
+          email: john-email@feaggle.com
+        - name: Bob
+          email: bob-email@feaggle.com
+    my-release:
+      is-a: release
+      in-project: my-project
+      description: My first release!
+      enabled: true
